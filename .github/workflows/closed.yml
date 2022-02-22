@@ -1,0 +1,18 @@
+on:
+  pull_request:
+    branches:
+      - master
+    types: [closed]
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+      - name: Add tag
+        run: |
+          ver=1.0.0
+          git tag -a v"$ver" -m "version $ver"
+          git push origin "v$ver"
