@@ -14,5 +14,7 @@ jobs:
       - name: Add tag
         run: |
           ver=1.0.0
+          git config --local user.email "kokoichi.64a@gmail.com"
+          git config --local user.name "GitHub Action"
           git tag -a v"$ver" -m "version $ver"
           git push origin "v$ver"
