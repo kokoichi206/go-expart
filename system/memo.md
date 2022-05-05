@@ -227,6 +227,69 @@ OSの仕事の中には、時間のかかるものや、いつ返ってくるか
   - シグナル
 
 
+## sec 5
+システムコールとは「特権モードでOSの機能を呼ぶ」こと。
+
+### CPU の動作モード
+プロセスは自分のことだけに集中し、メモリや時間の管理はプロセスの外からOSが全て行う方式が主流。
+
+実行してよいハードウェアとしての機能が、ソフトウェアの種類に応じて制限されており、それを動作モードによって区別している。サポートしている動作モードの種類はCPUによって異なるが、OSが動作する特権モードと、一般的なアプリケーションが動作するユーザーモードの2種類はある。
+
+OSの機能も、アプリケーションの機能も、バイナリレベルで見れば同じようなアセンブリコードですが、CPUの動作モードが異なる。
+
+### システムコールでモードの壁を越える
+システムコールを介して、特権モードでのみ許されている機能をユーザーモードのアプリケーションから利用できるようにしている。
+
+ん？それって、ユーザーモードに最初から許可してたらダメなん？特別な使い方のみ、にしたいってこと？ぽい。
+
+mac の場合に、ファイルオープンの syscall が呼ばれる。
+
+``` go
+syscall.Open(name, flag|syscall.O_CLOEXEC, syscallMode(perm))
+
+syscall(funcPC(libc_open_trampoline), uintptr(unsafe.Pointer(_p0)), uintptr(mode), uintptr(perm))
+
+// ---- asm_darwin_amd64.s の中のコード
+// func Syscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno);
+TEXT	·Syscall(SB),NOSPLIT,$0-56
+	CALL	runtime·entersyscall(SB)
+	MOVQ	a1+8(FP), DI
+	MOVQ	a2+16(FP), SI
+	MOVQ	a3+24(FP), DX
+	MOVQ	trap+0(FP), AX	// syscall entry
+	ADDQ	$0x2000000, AX
+	SYSCALL
+	JCC	ok
+	MOVQ	$-1, r1+32(FP)
+	MOVQ	$0, r2+40(FP)
+	MOVQ	AX, err+48(FP)
+	CALL	runtime·exitsyscall(SB)
+	RET
+  ...
+```
+
+`runtime·entersyscall`から`runtime·exitsyscall`の中に、`SYSCALL`という命令がある。
+
+POSIX（Portable Operating System Interface）は、OS間で共通のシステムコールを決めることで、アプリケーションの移植性を高めるために作られたIEEE規格のこと。最終的にOSに仕事を頼むのはシステムコールだが、POSIXで定められているのはそのインタフェースが決められている！
+
+Go で syscall 以下の関数を使う場合、Go言語のドキュメントにはほとんどない。
+
+### システムコールの内側
+[linux のソースコード](https://github.com/torvalds/linux)の中の、[fs/read_write.c](https://github.com/torvalds/linux/blob/master/fs/read_write.c#L322)で`SYSCALL_DEFINE3`として定義されている。
+
+[arch/x86/entry/entry_64.S#L115](https://github.com/torvalds/linux/blob/master/arch/x86/entry/entry_64.S#L115)
+	call	do_syscall_64		/* returns with IRQs disabled */
+
+### システムコールのモニタリング
+main() 関数の呼び出し前の初期化シーケンスでも大量に呼ばれる。
+
+Linux では strace, macOS では dtruss コマンド
+
+### エラー処理
+どのシステムコールも、大抵は正常の場合には0より大きい数値、エラーの場合には-1を返すようになっている。
+
+
+
 
 
 
