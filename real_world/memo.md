@@ -135,6 +135,122 @@ curl --http1.0 -d "{\"hello\": \"world\"}" -H "Content-Type: application/json" h
 リクエストボディはどのメソッドでも使えるが、推奨されていないメソッド（GETなど）もある。URLの文字数制限（約2000文字）を嫌ってあえて受け付けるように実装することもできるが、基本は避けるべき。
 
 
+## sec 2
+
+### フォームを使った body の送信
+``` html
+<form method="POST">
+  <input name="title">
+  <input name="author">
+  <input type="submit">
+</form>
+```
+
+これと同じ形式の送信は、以下のcurl
+
+``` sh
+# 以下の body は title=The art of..&author=John Doe
+curl --http1.0 -d title="The art of.." -d author="John Doe" http://localhost:18888/lgtm
+
+# 以下は RFC3986 での規格になる（パーセントエンコーディング）
+curl --http1.0 --data-urlencode title="The art of & p.." -d author="John Doe" http://localhost:18888/lgtm
+# 受信する内容
+# title=The+art+of+%26+p..&author=John Doe
+```
+
+curl では、-d が渡されると、ブラウザと同じようにヘッダーとして、Content-Type: application/x-www-form-urlencoded を指定する！（ただし、エンコードされていないので厳密には違う）
+
+ブラウザでは、[RFC1866](https://datatracker.ietf.org/doc/html/rfc1866#section-8.2.1)に則って変換される！（クエリパラメーターの場合はこの RFC1866）
+
+### フォームでのファイルの送信
+"multipart/form-data" をつけないと x-www-form-uelencoded と解釈され、ファイル名だけが送信される
+
+``` html
+<form action="POST" enctype="multipart/form-data">
+</form>
+```
+
+一度のリクエストで複数のファイルを送信できるため、受け取りがわでファイルを区切る必要がある。そのため、送信時に、境界となる文字列をヘッダーに付与してあげている。
+
+``` sh
+curl --http1.0 -F title="The art of & p.." -F author="John Doe" -F attachment-file=@test.txt http://localhost:18888/lgtm
+```
+
+上記コマンドを打った場合に送信（サーバーに受信）される内容
+
+![](imgs/multipart_.png)
+
+-d と -F は混ぜることができない
+
+### コンテントネゴシエーション
+サーバーとクライアントで、通信の規格を揃えること
+
+``` sh
+# --compressed では「Accept-Encoding: deflate, gzip」
+# というヘッダーが付与される
+curl --http1.0 --compressed http://localhost:18888
+```
+
+### クッキー
+HTTPのヘッダーをインフラとして実装されている。
+
+curl
+-c で指定したファイルに受信したクッキーを保存
+-b で指定したファイルから読み込んでクッキーを送信する
+
+``` sh
+curl --http1.0 -b "name=value" http://localhost:18888
+curl --http1.0 -c cooke.txt -b cookie.txt -b "name=value" http://localhost:18888
+```
+
+使用期間には、ブラウザを閉じたら消えてしまうセッションクッキーと、期限が設定されていてブラウザを閉じても残る永続クッキーの２種類がある。
+
+### 制約
+- Expires, Max-Age 属性
+  - どちらかの指定がない場合、セッションクッキーとなる
+- Domain 属性
+  - クッキーを送信する対象のサーバー
+- HttpOnly 属性
+  - 悪意のある js が実行されるのを防ぐ
+- SameSite 属性
+  - RFC には存在しない
+  - 同じオリジンのドメインに対して送信
+
+クッキーの機能追加の歴史は、ウェブのセキュリティの歴史でもある。
+
+「スキーム、ドメイン、ポート」の３つをまとめてオリジンと呼んでいる？
+
+### 認証とセッション
+`base64(ユーザー名 + ":" + パスワード)`の形でやりとりしている
+
+curl で basic 認証
+
+``` sh
+# 「Authorization: Basic dXNlcjpwYXNz」というヘッダーが付与される
+curl --http1.0 --basic -u user:pass http://localhost:18888/lgtm
+# base64 <(echo -n user:pass)
+# > dXNlcjpwYXNz
+```
+
+より安全な Digest 認証
+
+なるほど、初回認証時に「nonce, algorithm, qop(保護レベル)」を送り、それをもとにハッシュ化したものを送ってもらう。nonce がランダム値。リトライ回数もわかる。
+
+### プロキシ
+- プロキシ
+  - 通信内容を理解する。必要に応じてコンテンツを改変したり、サーバーの代わりに応答したりする
+- ゲートウェイ
+  - 通信内容をそのまま転送する。内容の改変も許さない。
+  - クライアントからは存在すら気づかれてはならない！
+
+### メモ
+ウェブサイトへの機械的なアクセス時に、アクセス先に自分の身元を知らせるためにユーザーエージェントを使う流儀の人もいる。
+
+
+
+
+
+
 
 
 
@@ -144,6 +260,8 @@ curl --http1.0 -d "{\"hello\": \"world\"}" -H "Content-Type: application/json" h
 
 ## curl
 ``` sh
+curl --http1.0 http://localhost:18888/lgtm
+
 curl -v --http1.0 http://localhost:18888/lgtm
 curl --http1.0 -H "X-Test: Hi" http://localhost:18888/lgtm
 curl --http1.0 -H "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)" http://localhost:18888/lgtm
@@ -152,4 +270,8 @@ curl --http1.0 -X HEAD http://localhost:18888/lgtm
 curl --http1.0 --head http://localhost:18888/lgtm
 
 curl -L http://localhost:18888
+
+curl --http1.0 --data-urlencode title="The art of & p.." -d author="John Doe" http://localhost:18888/lgtm
+
+curl --http1.0 -F title="The art of & p.." -F author="John Doe" -F attachment-file=@test.txt http://localhost:18888/lgtm
 ```
