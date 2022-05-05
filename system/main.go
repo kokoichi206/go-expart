@@ -1,133 +1,101 @@
 package main
 
 import (
-	"bytes"
-	"compress/gzip"
-	"encoding/binary"
-	"encoding/csv"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"log"
-	"net"
-	"net/http"
+	"math"
 	"os"
-	"strings"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
-	// writerExample()
-	// fileWrite()
-	zipWrite()
+	timer(1)
 }
 
-func endian() {
-	// 32 ビットのビックエンディアンのデータ(10000)
-	data := []byte{0x0, 0x0, 0x27, 0x10}
-	var i int32
-	// エンディアンの変換
-	binary.Read(bytes.NewReader(data), binary.BigEndian, &i)
-}
+func timer(sec int) {
+	timeout := time.After(time.Duration(sec) * time.Second)
 
-func fileWrite() {
-	file, _ := os.Create("test.txt")
-	defer file.Close()
-	file.Write([]byte("new line"))
-	file.Write([]byte("new line"))
-	file.Write([]byte("new line"))
-	io.Copy(os.Stdout, file)
-	// io.Copy(file, file)
-}
-
-func stdin() {
+	// このforループを1秒間ずっと実行し続ける
 	for {
-		buffer := make([]byte, 5)
-		size, err := os.Stdin.Read(buffer)
-		if err == io.EOF {
-			fmt.Println("EOF")
-			break
-		}
-		fmt.Printf("size=%d input='%s'\n", size, string(buffer))
-	}
-}
-
-func readExample() {
-	// ラップする
-	var reader io.Reader = strings.NewReader("test data")
-	var readCloser io.ReadCloser = ioutil.NopCloser(reader)
-	readCloser.Close()
-}
-
-func csvWrite() {
-	records := [][]string{
-		{"first_name", "last_name", "username"},
-		{"Rob", "Pike", "rob"},
-		{"Ken", "Thompson", "ken"},
-		{"Robert", "Griesemer", "gri"},
-	}
-
-	file, err := os.Create("test.tsv")
-	defer file.Close()
-	if err != nil {
-		panic(err)
-	}
-
-	// w := csv.NewWriter(os.Stdout)
-	w := csv.NewWriter(file)
-	w.Comma = '\t'
-
-	for _, record := range records {
-		if err := w.Write(record); err != nil {
-			log.Fatalln("error writing record to csv:", err)
+		select {
+		case <-timeout:
+			fmt.Println("time out")
+			return
+		default:
+			// fmt.Println("default")
+			time.Sleep(time.Millisecond * 100)
 		}
 	}
+}
 
-	// Write any buffered data to the underlying writer (standard output).
-	w.Flush()
+func signalNotify() {
+	signals := make(chan os.Signal, 1)
+	// SIGINT (Ctrl+C) を受け取る
+	signal.Notify(signals, syscall.SIGINT)
 
-	if err := w.Error(); err != nil {
-		log.Fatal(err)
+	// シグナルがくるまで待つ
+	fmt.Println("Waiting SIGINT (CTRL+C)")
+	<-signals
+	fmt.Println("SIGINT arrived")
+}
+
+func printPrimeNumbers() {
+	pn := primeNumbers()
+	for n := range pn {
+		fmt.Println(n)
 	}
 }
 
-func zipWrite() {
-	file, err := os.Create("test.txt.gz")
-	if err != nil {
-		panic(err)
-	}
-	writer := gzip.NewWriter(file)
-	writer.Header.Name = "test.txt"
-	io.WriteString(writer, "gzip.Writer example\n")
-	writer.Flush()
+func primeNumbers() chan int {
+	result := make(chan int)
+	go func() {
+		result <- 2
+		for i := 3; i < 1000; i += 2 {
+			l := int(math.Sqrt(float64(i)))
+			found := false
+			for j := 3; j < l; j += 2 {
+				if i%j == 0 {
+					found = true
+					break
+				}
+			}
+			if !found {
+				result <- i
+			}
+			time.Sleep(500 * time.Millisecond)
+		}
+		close(result)
+	}()
+	return result
 }
 
-func internetAccess() {
-	conn, err := net.Dial("tcp", "ascii.jp:80")
-	if err != nil {
-		panic(err)
-	}
-	io.WriteString(conn, "GET / HTTP/1.0\r\nHost: ascii.jp\r\n\r\n")
-	// net.Conn は、io.Reader のインタフェースでもあることを利用
-	io.Copy(os.Stdout, conn)
-
-	req, err := http.NewRequest("GET", "http://ascii.jp", nil)
-	req.Write(conn)
-	// http.ResponseWriter というものも高レイヤーにある
+func chanel() {
+	fmt.Println("start sub()")
+	done := make(chan struct{})
+	go func() {
+		time.Sleep(time.Second)
+		fmt.Println("sub is finished")
+		done <- struct{}{}
+	}()
+	<-done
+	fmt.Println("all tasks are finished")
 }
 
-func writerExample() {
-	fmt.Println("Hello World!")
+func sub() {
+	fmt.Println("sub() is running")
+	time.Sleep(time.Second)
+	fmt.Println("sub() is finished")
+}
 
-	file, err := os.Create("test.txt")
-	defer file.Close()
-	if err != nil {
-		panic(err)
-	}
-	file.Write([]byte("os.File example\n"))
+func goroutine() {
+	fmt.Println("start sub()")
+	go sub()
 
-	os.Stdout.Write([]byte("os.Stdout exapmle\n"))
-
-	var buffer bytes.Buffer
-	buffer.Write([]byte("bytes.Buffer example\n"))
-	fmt.Println(buffer.String())
+	go func() {
+		fmt.Println("sub() is running")
+		time.Sleep(time.Second)
+		fmt.Println("sub() is finished")
+	}()
+	time.Sleep(2 * time.Second)
 }
