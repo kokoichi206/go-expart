@@ -1,0 +1,34 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"time"
+)
+
+var (
+	counter int
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	counter++
+	tmp := counter
+	time.Sleep(1 * time.Second)
+	fmt.Println(tmp)
+	// dump, err := httputil.DumpRequest(r, true)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
+	// 	return
+	// }
+	// fmt.Println(string(dump))
+	// fmt.Fprintf(w, "<html><body>hello</body></html>\n")
+}
+
+func main() {
+	var httpServer http.Server
+	http.HandleFunc("/", handler)
+	log.Println("start http listening :18888")
+	httpServer.Addr = ":18888"
+	log.Println(httpServer.ListenAndServe())
+}

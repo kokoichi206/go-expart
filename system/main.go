@@ -2,181 +2,67 @@ package main
 
 import (
 	"fmt"
-	"math"
-	"os"
-	"os/signal"
-	"os/user"
-	"path/filepath"
-	"strings"
-	"syscall"
+	"runtime"
+	"sync"
 	"time"
 )
 
+// Practice about Concurrent & Parallel
+//
+// Especially, using these functions
+//   goroutines
 func main() {
-	dirInfo()
-	tilde()
-    traverseDirToFindImages()
+	calcLoan()
 }
 
-func traverseDirToFindImages() {
-	imageSuffix := map[string]bool{
-		".jpg":  true,
-		".jpeg": true,
-		".png":  true,
-		".webp": true,
-		".gif":  true,
-		".tiff": true,
-		".eps":  true,
+func calc(id, price int, interestRate float64, year int) {
+	months := year * 12
+	interest := 0
+	for i := 0; i < months; i++ {
+		balance := price * (months - i) / months
+		interest += int(float64(balance) * interestRate / 12)
 	}
-
-	root := "."
-
-	err := filepath.Walk(root,
-		func(path string, info os.FileInfo, err error) error {
-			if info.IsDir() {
-				if info.Name() == "_build" {
-					return filepath.SkipDir
-				}
-				return nil
-			}
-			ext := strings.ToLower(filepath.Ext(info.Name()))
-			if imageSuffix[ext] {
-				rel, err := filepath.Rel(root, path)
-				if err != nil {
-					return nil
-				}
-				fmt.Printf("%s\n", rel)
-			}
-			return nil
-		})
-	if err != nil {
-        fmt.Println(1, err)
+	fmt.Printf("year=%d total=%d interest=%d id=%d\n", year, price+interest, interest, id)
+}
+func worker(id, price int, interestRate float64, years chan int, wg *sync.WaitGroup) {
+	// タスクがなくなってタスクのチャネルが close されるまで無限ループ
+	for yaer := range years {
+		calc(id, price, interestRate, yaer)
+		wg.Done()
 	}
 }
 
-func tilde() {
-	fmt.Println(os.UserHomeDir())
-	fmt.Println(Clean2("~/${LANG}/p/../hoge.txt"))
-}
-
-func Clean2(path string) string {
-	if len(path) > 1 && path[0:2] == "~/" {
-		my, err := user.Current()
-		if err != nil {
-			panic(err)
-		}
-		path = my.HomeDir + path[1:]
+func calcLoan() {
+	// 借入額
+	price := 4000_0000
+	// 利子1.1%
+	interestRate := 0.011
+	years := make(chan int, 35)
+	for i := 1; i < 36; i++ {
+		years <- i
 	}
-	path = os.ExpandEnv(path)
-	return filepath.Clean(path)
-}
-
-func dirInfo() {
-	dir, err := os.Open(".")
-	if err != nil {
-		panic(err)
+	var wg sync.WaitGroup
+	wg.Add(35)
+	// CPU コア数分の goroutine 起動
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go worker(i, price, interestRate, years, &wg)
 	}
-	fileInfos, err := dir.ReadDir(-1) // 負の数は全要素取得
-	if err != nil {
-		panic(err)
+	close(years)
+	wg.Wait()
+}
+
+func goroutineCost() {
+	tasks := []string{
+		"go build -o main main.go",
+		"mv main share",
+		"./publish",
 	}
-	for _, fileInfo := range fileInfos {
-		if fileInfo.IsDir() {
-			fmt.Printf("[Dir] %s\n", fileInfo.Name())
-		} else {
-			fmt.Printf("[File] %s\n", fileInfo.Name())
-		}
+	for _, task := range tasks {
+		go func() {
+			// CAUTION!
+			// goroutine is very fast, but not cost zero
+			fmt.Println(task)
+		}()
 	}
-	fmt.Printf("\n===== path/filepath =====\n")
-	fmt.Printf("Temp File Path: %s\n", filepath.Join(os.TempDir(), "temp.txt"))
-	fmt.Printf("GOPATH Base: %s\n", filepath.Base(os.Getenv("GOPATH")))
-	fmt.Printf("GOPATH Dir: %s\n", filepath.Dir(os.Getenv("GOPATH")))
-	fmt.Printf("GOPATH Ext: %s\n", filepath.Ext(os.Getenv("GOPATH")))
-}
-
-func timer(sec int) {
-	timeout := time.After(time.Duration(sec) * time.Second)
-
-	// このforループを1秒間ずっと実行し続ける
-	for {
-		select {
-		case <-timeout:
-			fmt.Println("time out")
-			return
-		default:
-			// fmt.Println("default")
-			time.Sleep(time.Millisecond * 100)
-		}
-	}
-}
-
-func signalNotify() {
-	signals := make(chan os.Signal, 1)
-	// SIGINT (Ctrl+C) を受け取る
-	signal.Notify(signals, syscall.SIGINT)
-
-	// シグナルがくるまで待つ
-	fmt.Println("Waiting SIGINT (CTRL+C)")
-	<-signals
-	fmt.Println("SIGINT arrived")
-}
-
-func printPrimeNumbers() {
-	pn := primeNumbers()
-	for n := range pn {
-		fmt.Println(n)
-	}
-}
-
-func primeNumbers() chan int {
-	result := make(chan int)
-	go func() {
-		result <- 2
-		for i := 3; i < 1000; i += 2 {
-			l := int(math.Sqrt(float64(i)))
-			found := false
-			for j := 3; j < l; j += 2 {
-				if i%j == 0 {
-					found = true
-					break
-				}
-			}
-			if !found {
-				result <- i
-			}
-			time.Sleep(500 * time.Millisecond)
-		}
-		close(result)
-	}()
-	return result
-}
-
-func chanel() {
-	fmt.Println("start sub()")
-	done := make(chan struct{})
-	go func() {
-		time.Sleep(time.Second)
-		fmt.Println("sub is finished")
-		done <- struct{}{}
-	}()
-	<-done
-	fmt.Println("all tasks are finished")
-}
-
-func sub() {
-	fmt.Println("sub() is running")
 	time.Sleep(time.Second)
-	fmt.Println("sub() is finished")
-}
-
-func goroutine() {
-	fmt.Println("start sub()")
-	go sub()
-
-	go func() {
-		fmt.Println("sub() is running")
-		time.Sleep(time.Second)
-		fmt.Println("sub() is finished")
-	}()
-	time.Sleep(2 * time.Second)
 }
