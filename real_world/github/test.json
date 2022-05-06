@@ -1,0 +1,9 @@
+{
+  "description": "API example",
+  "public": true,
+  "files": {
+    "hello_from_rest_api.txt": {
+      "context": "Hello world"
+    }
+  }
+}

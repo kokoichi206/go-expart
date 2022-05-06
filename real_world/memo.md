@@ -247,15 +247,81 @@ curl --http1.0 --basic -u user:pass http://localhost:18888/lgtm
 ウェブサイトへの機械的なアクセス時に、アクセス先に自分の身元を知らせるためにユーザーエージェントを使う流儀の人もいる。
 
 
+## sec 3
+client
+
+### multipart POST
+POST の第二引数の Content-Type には、以下の`FormDataContentType`を使う
+
+``` go
+// FormDataContentType returns the Content-Type for an HTTP
+// multipart/form-data with this Writer's Boundary.
+func (w *Writer) FormDataContentType() string {
+	b := w.boundary
+	// We must quote the boundary if it contains any of the
+	// tspecials characters defined by RFC 2045, or space.
+	if strings.ContainsAny(b, `()<>@,;:\"/[]?= `) {
+		b = `"` + b + `"`
+	}
+	return "multipart/form-data; boundary=" + b
+}
+```
 
 
+## 気になるところ
+
+Content-Disposition のヘッダーの内容によって、ブラウザは表示するかダウンロードするかを選んでいる。
+
+### 認証認可
+- フェデレーテッドログイン
+  - 自分のサービス以外が管理するIDを使ったログイン
+
+### SAML（Security Assertion Markup Language）
+SAMLはウェブ系の技術を前提としたシングルサインオンの仕組み。octa, Onelogin などSaaSで提供されているサービスもある。クッキーを使ってセッションを管理するウェブの仕組みに準じており、ドメインをまたいだサービス間でシングルサインオンできるようになっている。
+
+- ユーザー
+- 認証プロバイダー（IdP）
+- サービスプロバイダー
+
+### OAuth
+OAuth は認証ではなく認可のための仕組み。
+
+- 認可サーバー
+- リソースサーバー
+- クライアント
+
+OpenIDが実現していることは、ユーザーが他のサービスで認証されていることを伝えることだけ。
+
+### OpenID Connect
+OAuth2.0 をベースにして、認可だけでなく、人称として使っても問題ないように拡張したもの。
+ユーザー目線でのフローは、OpenID, OAuth と同じ。
+
+アクセストークンとIDトークンを取得するために、２つのエンドポイントと、３つのフローを定義。
+
+### WebRTC（Web Real-Time Communication）
+ブラウザとブラウザのP2P通信でも使える！
 
 
+### クロスサイトスクリプティング（XSS）
+javascript を使った攻撃。
 
+### クッキーの設定
+httpOnly 属性をつけることで、JS からアクセスできないようにする。
 
+### ヘッダー
+Content-Security-Policy ヘッダーはウェブサイトで使える機能を細かくON／OFFできる強力な仕組み！ブラウザーが行う検査であり、サーバーではその情報を見ることはできない。
 
+### クロスオリジンリソースシェアリング（CORS）
+オリジン（ドメイン名）を跨いでリソースを共有する方法。リソース共有とは、XMLHttpRequestやFetch APIでのアクセスのこと。
 
+守る対象はクライアントではなくAPIサーバー。許可してないウェブサイトからのアクセスを防ぐのが目的！
 
+### クロスサイトクエストフォージェリ（CSRF）
+本人が意図しないサーバーリクエストを、無関係のページやサイトから送らせること。
+
+CSRFを防ぐ方法として、HTTPのステートレス性に制限を加える方法が利用される。フォームを設定する際に、隠しフィールドを作成しておきその値を送るようにする。
+
+また、SameSite属性をつけることで、リクエストを送信する時のページが同一サイトにない限りはクッキーを送信しなくなる。
 
 
 ## curl
