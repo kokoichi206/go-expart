@@ -5,12 +5,93 @@ import (
 	"math"
 	"os"
 	"os/signal"
+	"os/user"
+	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 )
 
 func main() {
-	timer(1)
+	dirInfo()
+	tilde()
+    traverseDirToFindImages()
+}
+
+func traverseDirToFindImages() {
+	imageSuffix := map[string]bool{
+		".jpg":  true,
+		".jpeg": true,
+		".png":  true,
+		".webp": true,
+		".gif":  true,
+		".tiff": true,
+		".eps":  true,
+	}
+
+	root := "."
+
+	err := filepath.Walk(root,
+		func(path string, info os.FileInfo, err error) error {
+			if info.IsDir() {
+				if info.Name() == "_build" {
+					return filepath.SkipDir
+				}
+				return nil
+			}
+			ext := strings.ToLower(filepath.Ext(info.Name()))
+			if imageSuffix[ext] {
+				rel, err := filepath.Rel(root, path)
+				if err != nil {
+					return nil
+				}
+				fmt.Printf("%s\n", rel)
+			}
+			return nil
+		})
+	if err != nil {
+        fmt.Println(1, err)
+	}
+}
+
+func tilde() {
+	fmt.Println(os.UserHomeDir())
+	fmt.Println(Clean2("~/${LANG}/p/../hoge.txt"))
+}
+
+func Clean2(path string) string {
+	if len(path) > 1 && path[0:2] == "~/" {
+		my, err := user.Current()
+		if err != nil {
+			panic(err)
+		}
+		path = my.HomeDir + path[1:]
+	}
+	path = os.ExpandEnv(path)
+	return filepath.Clean(path)
+}
+
+func dirInfo() {
+	dir, err := os.Open(".")
+	if err != nil {
+		panic(err)
+	}
+	fileInfos, err := dir.ReadDir(-1) // 負の数は全要素取得
+	if err != nil {
+		panic(err)
+	}
+	for _, fileInfo := range fileInfos {
+		if fileInfo.IsDir() {
+			fmt.Printf("[Dir] %s\n", fileInfo.Name())
+		} else {
+			fmt.Printf("[File] %s\n", fileInfo.Name())
+		}
+	}
+	fmt.Printf("\n===== path/filepath =====\n")
+	fmt.Printf("Temp File Path: %s\n", filepath.Join(os.TempDir(), "temp.txt"))
+	fmt.Printf("GOPATH Base: %s\n", filepath.Base(os.Getenv("GOPATH")))
+	fmt.Printf("GOPATH Dir: %s\n", filepath.Dir(os.Getenv("GOPATH")))
+	fmt.Printf("GOPATH Ext: %s\n", filepath.Ext(os.Getenv("GOPATH")))
 }
 
 func timer(sec int) {
