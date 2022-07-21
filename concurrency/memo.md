@@ -11,6 +11,8 @@
 go run -race .
 ```
 
+Race condition is difficult to find.
+
 ## Library
 
 ```sh
