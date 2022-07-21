@@ -10,3 +10,9 @@
 ```sh
 go run -race .
 ```
+
+## Library
+
+```sh
+go get github.com/faith/color
+```
