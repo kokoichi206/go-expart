@@ -18,3 +18,8 @@ Race condition is difficult to find.
 ```sh
 go get github.com/faith/color
 ```
+
+## memo
+
+- メール送信はコストが高い
+  - background 処理にすべき
