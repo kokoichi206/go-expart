@@ -27,6 +27,7 @@ var Usage = func() {
 
 // Is this global var ok?
 var params Params
+var osExit = os.Exit
 
 func init() {
 	flag.BoolVarP(&params.IsHelp, "help", "h", false, "Print help message")
@@ -45,7 +46,10 @@ func main() {
 func output(params Params) {
 	if params.IsHelp {
 		Usage()
-		os.Exit(0)
+
+		// os.Exit and return are redundant... but for testing
+		osExit(0)
+		return
 	}
 
 	if len(params.Args) == 0 {
@@ -54,13 +58,15 @@ func output(params Params) {
 		params.Name = params.Args[0]
 	} else {
 		// TODO: Multiple arguments output
-		os.Exit(0)
+		osExit(0)
+		return
 	}
 
 	files, err := ioutil.ReadDir(params.Name)
 	if err != nil {
 		fmt.Printf("ls: %s: No such file or directory\n", params.Name)
-		os.Exit(1)
+		osExit(1)
+		return
 	}
 
 	if params.IsColor {
