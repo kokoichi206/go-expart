@@ -27,6 +27,22 @@ func Test_output(t *testing.T) {
 			checkResponse: func(t *testing.T, result string) {
 				require.Contains(t, result, "main.go")
 				require.Contains(t, result, "examples")
+				require.NotContains(t, result, ".github")
+			},
+		},
+		{
+			name: "WithNoDirectoryNameAndAllOption",
+			params: Params{
+				IsHelp:     false,
+				IsColor:    false,
+				ShowHidden: true,
+				// When no Arg is passed, the '.' is set to Name.
+			},
+			expectedExit: 0,
+			checkResponse: func(t *testing.T, result string) {
+				require.Contains(t, result, "main.go")
+				require.Contains(t, result, "examples")
+				require.Contains(t, result, ".github")
 			},
 		},
 		{
@@ -40,6 +56,24 @@ func Test_output(t *testing.T) {
 			checkResponse: func(t *testing.T, result string) {
 				require.Contains(t, result, "apple")
 				require.Contains(t, result, "banana")
+				require.Contains(t, result, "dir_ex")
+				require.NotContains(t, result, ".secret")
+			},
+		},
+		{
+			name: "WithSpecificDirectoryNameAndAllOption",
+			params: Params{
+				IsHelp:     false,
+				IsColor:    false,
+				ShowHidden: true,
+				Args:       []string{"examples"},
+			},
+			expectedExit: 0,
+			checkResponse: func(t *testing.T, result string) {
+				require.Contains(t, result, "apple")
+				require.Contains(t, result, "banana")
+				require.Contains(t, result, "dir_ex")
+				require.Contains(t, result, ".secret")
 			},
 		},
 		{
