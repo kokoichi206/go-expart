@@ -11,10 +11,11 @@ import (
 )
 
 type Params struct {
-	IsHelp  bool
-	IsColor bool
-	Args    []string
-	Name    string
+	IsHelp     bool
+	IsColor    bool
+	ShowHidden bool
+	Args       []string
+	Name       string
 }
 
 // Print usage
@@ -32,6 +33,7 @@ var osExit = os.Exit
 func init() {
 	flag.BoolVarP(&params.IsHelp, "help", "h", false, "Print help message")
 	flag.BoolVarP(&params.IsColor, "G", "G", false, "Print with bold cyan")
+	flag.BoolVarP(&params.ShowHidden, "all", "a", false, "Print hidden files")
 
 	flag.Parse()
 
@@ -70,27 +72,46 @@ func output(params Params) {
 	}
 
 	if params.IsColor {
-		printFilesWithColor(files)
+		printFilesWithColor(files, params.ShowHidden)
 	} else {
-		printFiles(files)
+		printFiles(files, params.ShowHidden)
 	}
 
 	fmt.Println()
 }
 
-func printFiles(files []fs.FileInfo) {
+func printFiles(files []fs.FileInfo, showHidden bool) {
 	for _, file := range files {
-		fmt.Printf("%s\t", file.Name())
-	}
-}
-
-func printFilesWithColor(files []fs.FileInfo) {
-	for _, file := range files {
-		if file.IsDir() {
-			d := color.New(color.FgCyan, color.Bold)
-			d.Printf("%s\t", file.Name())
-		} else {
+		if !isHiddenFile(file) || showHidden {
 			fmt.Printf("%s\t", file.Name())
 		}
 	}
+}
+
+func printFilesWithColor(files []fs.FileInfo, showHidden bool) {
+	for _, file := range files {
+
+		if !isHiddenFile(file) || showHidden {
+			if file.IsDir() {
+				d := color.New(color.FgCyan, color.Bold)
+				d.Printf("%s\t", file.Name())
+			} else {
+				fmt.Printf("%s\t", file.Name())
+			}
+		}
+	}
+}
+
+// Check whether the file is hidden file or not.
+func isHiddenFile(file fs.FileInfo) bool {
+
+	// TODO: Need more check especially for Windows or...
+	return isStartDot(file)
+}
+
+func isStartDot(file fs.FileInfo) bool {
+
+	const dotCharacter = 46
+
+	return len(file.Name()) > 0 && file.Name()[0] == dotCharacter
 }
