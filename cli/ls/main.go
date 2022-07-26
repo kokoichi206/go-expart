@@ -50,10 +50,10 @@ func init() {
 
 func main() {
 
-	output(params)
+	execute(params)
 }
 
-func output(params Params) {
+func execute(params Params) {
 	if params.IsHelp {
 		Usage()
 
@@ -79,51 +79,30 @@ func output(params Params) {
 		return
 	}
 
-	if params.IsColor {
-		printFilesWithColor(files, params.ShowHidden, params.ShowList)
-	} else {
-		printFiles(files, params.ShowHidden, params.ShowList)
-	}
+	printFiles(files, params.ShowHidden, params.ShowList, params.IsColor)
 
 	fmt.Println()
 }
 
-// With -l option: The Long Format description
-// -rw-r--r--  1 kokoichi  staff     2203 Jul 26 01:33 main.go
-// Mode Nlink owner group size mod
-func printFiles(files []fs.FileInfo, showHidden bool, showLong bool) {
-
-	maxDigit := findMaxDigit(files)
-
-	for _, file := range files {
-		if !isHiddenFile(file) || showHidden {
-			if showLong {
-				printLongInfo(file, maxDigit, false)
-			} else {
-				fmt.Printf("%s\t", file.Name())
-			}
-		}
-	}
-}
-
-func printFilesWithColor(files []fs.FileInfo, showHidden bool, showLong bool) {
+func printFiles(files []fs.FileInfo, showHidden bool, showLong bool, showColor bool) {
 
 	maxDigit := findMaxDigit(files)
 
 	for _, file := range files {
 
-		if !isHiddenFile(file) || showHidden {
-			if showLong {
-				printLongInfo(file, maxDigit, true)
-				continue
-			}
-			if file.IsDir() {
-				d := color.New(color.FgCyan, color.Bold)
-				d.Printf("%s\t", file.Name())
-			} else {
-				fmt.Printf("%s\t", file.Name())
-			}
+		// 隠しファイルで、-a オプションがない場合は出力しない。
+		if isHiddenFile(file) && !showHidden {
+			continue
 		}
+
+		// -l オプションがあればそれ用のを出力する。
+		if showLong {
+			printLongInfo(file, maxDigit, showColor)
+			continue
+		}
+
+		// 標準の出力。
+		printBasic(file, showColor)
 	}
 }
 
@@ -134,6 +113,7 @@ func isHiddenFile(file fs.FileInfo) bool {
 	return isStartDot(file)
 }
 
+// ファイル名の開始が "." かどうか。
 func isStartDot(file fs.FileInfo) bool {
 
 	const dotCharacter = 46
@@ -141,7 +121,16 @@ func isStartDot(file fs.FileInfo) bool {
 	return len(file.Name()) > 0 && file.Name()[0] == dotCharacter
 }
 
-// -l オプション指定時の出力
+func printBasic(file fs.FileInfo, showColor bool) {
+	if file.IsDir() && showColor {
+		d := color.New(color.FgCyan, color.Bold)
+		d.Printf("%s\t", file.Name())
+	} else {
+		fmt.Printf("%s\t", file.Name())
+	}
+}
+
+// -l オプション指定時の出力。
 func printLongInfo(file fs.FileInfo, maxDigit int, showColor bool) {
 	p := file.Sys()
 	var owner, group string

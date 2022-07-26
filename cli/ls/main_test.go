@@ -11,6 +11,8 @@ import (
 
 func Test_output(t *testing.T) {
 
+	// drwxr-xr-x のモードの出力。
+	// -l が正しくできていることの判断に使用。
 	const modeRegex = "[d-][rwx-]{9}.*"
 
 	testCases := []struct {
@@ -149,7 +151,7 @@ func Test_output(t *testing.T) {
 			name: "WithListOption",
 			params: Params{
 				IsHelp:   false,
-				IsColor:  true,
+				IsColor:  false,
 				ShowList: true,
 			},
 			expectedExit: 0,
@@ -179,7 +181,7 @@ func Test_output(t *testing.T) {
 			osExit = exit
 
 			// Act
-			result := GetStringFromStdOutput(output, tc.params)
+			result := GetStringFromStdOutput(execute, tc.params)
 
 			// Assert
 			t.Log(result)
