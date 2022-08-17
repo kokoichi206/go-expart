@@ -117,3 +117,6 @@ Go は具象的にインターフェース名を記載しない暗黙的イン�
   - go.mod ファイルに replace ディレクティブを記述する
   - Workspace モードを使う（Go 1.18 で追加！）！
 - テストが書きにくいコードは書き直しの対象になるだけではなく、凝集度が低いことや結合度が高い疑惑がある！
+  - テストコードを書こうとしてはじめてわかる設計のまずさが存在する！
+- [Twelve-Factor App](https://12factor.net/ja/)
+- [O'Reilly Online Learning](https://www.oreilly.com/online-learning/individuals.html)
