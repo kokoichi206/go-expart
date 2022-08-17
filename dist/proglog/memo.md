@@ -27,6 +27,22 @@ Google は gRPC を構築した際に protobuf を使った。
 - 言語寛容性
 - パフォーマンス
 
+### プロトコルバッファのコンパイル
+
+ある言語へコンパイルするには、その言語のランタイムが必要となる。
+Go には protobuf を Go コードにコンパイルするための２つのランタイムがある。
+
+```sh
+# protobuf ランタイムをインストール
+go get google.golang.org/protobuf/...@v1.28.0
+
+# protobuf をコンパイル
+protoc api/v1/*.proto \
+  --go_out=. \
+  --go_opt=paths=source_relative \
+  --proto_path=.
+```
+
 ## gRPC
 
 gRPC ではプロトコルバッファを使って API を定義し、メッセージをシリアライズしている。
