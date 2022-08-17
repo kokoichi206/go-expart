@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package log.v1;
+
+option go_package = "proglog/api/log_v1";
+
+// Go では構造体であり、protobuf ではメッセージ
+message Record {
+    bytes value = 1;
+    uint64 offset = 2;
+}
