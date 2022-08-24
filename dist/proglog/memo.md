@@ -104,3 +104,5 @@ go get google.golang.org/grpc
 #?? go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
 go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
 ```
+
+- internal パッケージとは、隣接するディレクトリのコードからしかインポートできない Go の魔法のパッケージ
