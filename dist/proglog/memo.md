@@ -92,3 +92,15 @@ protoc --version
 - インデックス: インデックスエントリを保存するファイル
 - セグメント: ストアとインデックスをまとめているものの抽象的概念
 - ログ: セグメントをすべてまとめているものの抽象的概念
+
+## gRPC
+
+- gRPC は protobuf と HTTP/2 という強固な基盤の上に構築
+  - protobuf はシリアライズに優れた性能
+  - HTTP/2 は、gRPC が利用する長く維持されるコネクションを提供
+
+```sh
+go get google.golang.org/grpc
+#?? go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
+```
