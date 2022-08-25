@@ -106,3 +106,7 @@ go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
 ```
 
 - internal パッケージとは、隣接するディレクトリのコードからしかインポートできない Go の魔法のパッケージ
+
+### そのほか
+
+- インタフェースによる依存性逆転
