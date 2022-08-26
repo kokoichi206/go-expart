@@ -110,3 +110,37 @@ go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
 ### そのほか
 
 - インタフェースによる依存性逆転
+
+## セキュリティ
+
+- 安全なサービスの３ステップ
+  - 中間者攻撃から保護: 通信データの暗号化
+  - クライアントを識別: 認証
+  - クライアントへの権限: 認可
+- ACL: Access Control List
+- 社内サービスでは、第三者機関を経由しない証明書を使って良いだろう
+- CFSSL
+  - TLS 証明書の署名、検証、バンドル、結果を json で出力
+  - json 出力を受け取り、鍵、証明書、CSR、バンドルのファイルに分割
+
+```sh
+# CloudFlare のだす CFSSL を使う（OSS）
+go install github.com/cloudflare/cfssl/cmd/cfssl@v1.6.1
+go install github.com/cloudflare/cfssl/cmd/cfssljson@v1.6.1
+```
+
+### CFSSL
+
+https://github.com/cloudflare/cfssl
+
+- CN: Common Name
+- C: Country
+- L: Locality
+- ST: State
+- O: Organization
+- OU: Organizational Unit
+
+```sh
+make init
+make gencert
+```
