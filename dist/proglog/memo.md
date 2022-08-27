@@ -144,3 +144,8 @@ https://github.com/cloudflare/cfssl
 make init
 make gencert
 ```
+
+### 相互 TLS 認証
+
+`client-csr.json` の CN フィールドがクライアントの ID にあたるため、重要な値となる。クライアントのパーミッションを保存するための ID。
+
