@@ -149,3 +149,15 @@ make gencert
 
 `client-csr.json` の CN フィールドがクライアントの ID にあたるため、重要な値となる。クライアントのパーミッションを保存するための ID。
 
+## 認可
+
+認可を実装するもっとも簡単な方法は、アクセス・コントロール・リスト（ACL）である。
+ACL とは「サブジェクト A は、オブジェクト C に対してアクション B を行うことが許可されている」と各行に書かれた規則のテーブル！
+
+### casbin
+
+https://github.com/casbin/casbin
+
+```sh
+go get github.com/casbin/casbin@v1.9.1
+```
