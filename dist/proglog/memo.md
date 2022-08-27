@@ -161,3 +161,9 @@ https://github.com/casbin/casbin
 ```sh
 go get github.com/casbin/casbin@v1.9.1
 ```
+
+### サービスの安全性まとめ
+
+- TLS によるコネクションの暗号化
+- クライアントとサーバの身元を確認するための相互 TLS 認証
+- ACL に基づく認可によるクライアントの操作許可
