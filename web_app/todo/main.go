@@ -7,6 +7,9 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	config "github.com/kokoichi206/go-expert/web/todo/config"
 	"golang.org/x/sync/errgroup"
@@ -20,6 +23,10 @@ func main() {
 }
 
 func run(ctx context.Context) error {
+	// 今処理しているシグナルを返し終わってから終了する！
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
 	// 環境変数から設定値を読み込む
 	config, err := config.New()
 	if err != nil {
@@ -34,6 +41,8 @@ func run(ctx context.Context) error {
 
 	s := &http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// シグナルハンドリング確認用
+			// time.Sleep(5 * time.Second)
 			fmt.Fprintf(w, "Hello, %s", r.URL.Path[1:])
 		}),
 	}
