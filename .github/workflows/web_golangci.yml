@@ -19,8 +19,11 @@ jobs:
         uses: reviewdog/action-golangci-lint@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # working-directory が効かない？
           golangci_lint_flags: "--config=./.golangci.yml ./..."
           fail_on_error: true
           reporter: "github-pr-review"
+          # https://github.com/reviewdog/action-golangci-lint/blob/master/README.md#workdir
+          workdir: ./web_app/todo/
 
 
