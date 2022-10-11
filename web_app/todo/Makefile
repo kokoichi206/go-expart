@@ -19,6 +19,9 @@ up:	## docker compose up with hot reload
 down:
 	docker compose down
 
+down-all:
+	docker compose down  --volumes
+
 logs:	## Tail docker compose logs
 	docker compose logs -f
 
@@ -27,6 +30,12 @@ ps:	## Check container status
 
 test:
 	go test -race -shuffle=on ./...
+
+migrate:
+	mysqldef -u todo -p todo -h 127.0.0.1 -P 33306 todo < ./_tools/mysql/schema.sql
+
+dry-migrate:
+	mysqldef -u todo -p todo -h 127.0.0.1 -P 33306 todo --dry-run < ./_tools/mysql/schema.sql
 
 help:	## https://postd.cc/auto-documented-makefile/
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \

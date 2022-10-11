@@ -48,3 +48,11 @@ https://khigashigashi.hatenablog.com/entry/2019/04/27/150230
 curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/ok_req.json.golden
 curl -i -XGET localhost:18000/tasks
 ```
+
+## マイグレーションツール
+
+標準パッケージや Go 自体に RDMBS のマイグレーションを管理する機能は提供されてないので、OSS を利用する。
+
+```sh
+go install github.com/k0kubun/sqldef/cmd/mysqldef@latest
+```
