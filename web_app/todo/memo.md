@@ -18,7 +18,7 @@
 
 ## Docker
 
-``` sh
+```sh
 # 以下のように target オプションを指定することで、deploy にリリース用のバイナリしか含まれなくなる
 docker build -t kokoichi0206/todo:${DOCKER_TAG} --target deploy ./
 
@@ -26,4 +26,25 @@ docker compose build --no-cache
 docker compose up
 
 curl localhost:18000/hello
+```
+
+## テスト
+
+- t.Helper
+- t.Skip
+- t.Cleanup
+- t.Parallel
+
+テストの入力や期待値を別ファイルとして保存したテストのことを**ゴールデンテスト**と呼ぶ！
+テストコードとは別に保存するデータは例えばデータなら `*.json.golden` というファイル名とかにする。
+
+https://medium.com/soon-london/testing-with-golden-files-in-go-7fccc71c43d3
+
+golden ファイルを json として認識させる
+
+https://khigashigashi.hatenablog.com/entry/2019/04/27/150230
+
+```sh
+curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/ok_req.json.golden
+curl -i -XGET localhost:18000/tasks
 ```
