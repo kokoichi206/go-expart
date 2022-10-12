@@ -1,4 +1,4 @@
-.PHONY: help build build-local up down logs ps test
+.PHONY: help build build-local up down logs ps test run
 # make と打った時に何が出てくるか
 .DEFAULT_GOAL := help
 
@@ -7,15 +7,20 @@ build:
 	docker build -t kokoichi0206/todo:${DOCKER_TAG} \
 		--target deploy ./
 
+run:	## port 等は一例
+	docker run -p 28000:80 kokoichi0206/todo:latest
+
 build-local:	## build docker image to local development
 	docker compose build --no-cache
-
 
 up:	## docker compose up with hot reload
 	docker compose up -d
 
 down:
 	docker compose down
+
+down-all:
+	docker compose down  --volumes
 
 logs:	## Tail docker compose logs
 	docker compose logs -f
@@ -25,6 +30,12 @@ ps:	## Check container status
 
 test:
 	go test -race -shuffle=on ./...
+
+migrate:	# Migration
+	mysqldef -u todo -p todo -h 127.0.0.1 -P 33306 todo < ./_tools/mysql/schema.sql
+
+dry-migrate:
+	mysqldef -u todo -p todo -h 127.0.0.1 -P 33306 todo --dry-run < ./_tools/mysql/schema.sql
 
 help:	## https://postd.cc/auto-documented-makefile/
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \

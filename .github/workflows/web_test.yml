@@ -8,6 +8,23 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # https://docs.github.com/ja/actions/using-containerized-services/about-service-containers
+    services:
+      mysql:
+        image: mysql:8
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 20s
+          --health-timeout 10s
+          --health-retries 10
+        ports:
+          - 3306:3306
+        env:
+          # ここはダブルクォーテーションなし？
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_USER: todo
+          MYSQL_PASSWORD: todo
+          MYSQL_DATABASE: todo
     defaults:
       run:
         shell: bash
@@ -18,6 +35,10 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: '>=1.18'
+
+      - run: |
+          go install github.com/k0kubun/sqldef/cmd/mysqldef@latest
+          mysqldef -u todo -p todo -h 127.0.0.1 -P 33306 todo < ./_tools/mysql/schema.sql
 
       - run: go test ./... -coverprofile=coverage.out
 
