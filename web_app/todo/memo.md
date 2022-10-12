@@ -64,3 +64,28 @@ go get -u github.com/DATA-DOG/go-sqlmock
 ```
 
 https://github.com/DATA-DOG/go-sqlmock
+
+## 疎結合へ！
+
+責務を複数の実装に分割。
+インターフェースを挟むことで、他のパッケージの実装内容に影響しないテストコードが書ける。
+
+handler パッケージからは、ビジネスロジックと永続化に関わる処理を取り除く
+
+## generate でモックの自動生成
+
+go generate
+https://qiita.com/yaegashi/items/d1fd9f7d0c75b2bb7446
+
+[moq 生成ツール](https://github.com/matryer/moq)
+[このツールの思想: Meet Moq: Easily mock interfaces in Go](https://medium.com/@matryer/meet-moq-easily-mock-interfaces-in-go-476444187d10)
+
+```
+go get -u github.com/matryer/moq
+```
+
+## TODO
+
+疑問等
+
+handler/service と service/interface の役割の違い（？）が分かってない

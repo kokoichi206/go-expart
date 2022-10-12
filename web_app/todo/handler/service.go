@@ -1,0 +1,17 @@
+package handler
+
+import (
+	"context"
+
+	"github.com/kokoichi206/go-expert/web/todo/entity"
+)
+
+// go generate コマンドで実行されるための導線
+//go:generate go run github.com/matryer/moq -out moq_test.go . ListTasksService AddTaskService
+type ListTasksService interface {
+	ListTasks(ctx context.Context) (entity.Tasks, error)
+}
+
+type AddTaskService interface {
+	AddTask(ctx context.Context, title string) (*entity.Task, error)
+}

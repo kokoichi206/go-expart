@@ -9,6 +9,7 @@ import (
 	"github.com/kokoichi206/go-expert/web/todo/clock"
 	"github.com/kokoichi206/go-expert/web/todo/config"
 	"github.com/kokoichi206/go-expert/web/todo/handler"
+	"github.com/kokoichi206/go-expert/web/todo/service"
 	"github.com/kokoichi206/go-expert/web/todo/store"
 )
 
@@ -20,17 +21,23 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})
 
+	// validator とかを new するのって、NewMux(ルーティイングを初期化)の役割なんだっけ？
 	v := validator.New()
 	db, cleanup, err := store.New(ctx, cfg)
 	if err != nil {
 		return nil, cleanup, err
 	}
 	r := store.Repository{Clocker: clock.RealClocker{}}
-	at := &handler.AddTask{DB: db, Repo: r, Validator: v}
+	at := &handler.AddTask{
+		Service:   &service.AddTask{DB: db, Repo: &r},
+		Validator: v,
+	}
 
 	mux.Post("/tasks", at.ServeHTTP)
 
-	lt := &handler.ListTask{DB: db, Repo: r}
+	lt := &handler.ListTask{
+		Service: &service.ListTask{DB: db, Repo: &r},
+	}
 	mux.Get("/tasks", lt.ServeHTTP)
 
 	return mux, cleanup, nil
