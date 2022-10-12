@@ -31,7 +31,7 @@ ps:	## Check container status
 test:
 	go test -race -shuffle=on ./...
 
-migrate:
+migrate:	# Migration
 	mysqldef -u todo -p todo -h 127.0.0.1 -P 33306 todo < ./_tools/mysql/schema.sql
 
 dry-migrate:

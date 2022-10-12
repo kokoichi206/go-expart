@@ -56,3 +56,11 @@ curl -i -XGET localhost:18000/tasks
 ```sh
 go install github.com/k0kubun/sqldef/cmd/mysqldef@latest
 ```
+
+## mock tool
+
+```sh
+go get -u github.com/DATA-DOG/go-sqlmock
+```
+
+https://github.com/DATA-DOG/go-sqlmock

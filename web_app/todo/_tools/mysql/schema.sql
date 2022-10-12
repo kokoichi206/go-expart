@@ -8,7 +8,7 @@ CREATE TABLE `user`
     `modified`  DATETIME(6) NOT NULL COMMENT 'レコード修正日時',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uix_name` (`name`) USING BTREE
-) Engine=InnoBD DEFAULT CHARSET=utf8mb4 COMMENT='ユーザー';
+) Engine=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='ユーザー';
 
 CREATE TABLE `task`
 (
@@ -18,4 +18,4 @@ CREATE TABLE `task`
     `created`   DATETIME(6) NOT NULL COMMENT 'レコード作成日時',
     `modified`  DATETIME(6) NOT NULL COMMENT 'レコード修正日時',
     PRIMARY KEY (`id`)
-) Engine=InnoBD DEFAULT CHARSET=utf8mb4 COMMENT='タスク';
+) Engine=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='タスク';
