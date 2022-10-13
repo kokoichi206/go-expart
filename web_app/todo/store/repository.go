@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -36,6 +37,14 @@ type Queryer interface {
 	SelectContext(ctx context.Context, dest interface{}, query string, args ...any) error
 }
 
+const (
+	// https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
+	// Error number: 1062; Symbol: ER_DUP_ENTRY; SQLSTATE: 23000
+	// Message: Duplicate entry '%s' for key %d
+	// The message returned with this error uses the format string for ER_DUP_ENTRY_WITH_KEY_NAME.
+	ErrCodeMySQLDuplicateEntry = 1062
+)
+
 var (
 	// インタフェースが期待通りに宣言されているかの確認
 	// DB とかでキャストしたものが対象の型になっているか
@@ -45,6 +54,8 @@ var (
 	_ Queryer  = (*sqlx.DB)(nil)
 	_ Execer   = (*sqlx.DB)(nil)
 	_ Execer   = (*sqlx.Tx)(nil)
+
+	ErrAlreadyEntry = errors.New("duplicate entry")
 )
 
 type Repository struct {

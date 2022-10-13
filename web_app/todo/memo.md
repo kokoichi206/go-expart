@@ -84,6 +84,27 @@ https://qiita.com/yaegashi/items/d1fd9f7d0c75b2bb7446
 go get -u github.com/matryer/moq
 ```
 
+## user
+
+```sh
+curl -X GET localhost:18000/health
+curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/ok_req.json.golden
+
+# なぜこれで通らず、" をエスケープしたもので通るのかを調べる！！！！
+## だめ
+curl -X POST localhost:18000/register -d '{"name": "john doe", "password": "test", "role": "user"}'
+curl -X POST localhost:18000/register -d '{"name":"john doe", "password":"test", "role":"user"}'
+curl: (52) Empty reply from server
+
+## おけ ？
+curl -X POST localhost:18000/register -d '{\"name\":\"john doe\", \"password\":\"test\", \"role\":\"user\"}'
+curl -X POST localhost:18000/register -d "{\'name\':\'john doe\', \'password\':\'test\', \'role\':\'user\'}"
+curl -X POST localhost:18000/register -d "{'name':'john doe', 'password':'test', 'role':'user'}"
+
+curl -i -XPOST localhost:18000/register -d @./handler/testdata/add_user/ok_req.json.golden
+
+```
+
 ## TODO
 
 疑問等
