@@ -106,6 +106,7 @@ curl -i -XPOST localhost:18000/register -d @./handler/testdata/add_user/ok_req.j
 ```
 
 ## Redis
+
 Key value 型の**インメモリデータベース**
 
 アクセストークンは有効期限が切れるとともに無効化すべき一時的なデータベースであるため、RDBMS を使った永続化は行わない。  
@@ -114,6 +115,7 @@ Key value 型の**インメモリデータベース**
 スケールアウトで複数のコンテナが稼働している可能性や、そもそも数分前と同じ仮想サーバーが稼働していない可能性があるクラウドネイティブなアプリケーションにおいて、リクエストを処理する API サーバーがアクセストークンを払い出した同じ API サーバーだという前提を置いたらだめ！
 
 **仮想サーバーやコンテナはステートレスである必要がある**ため、一時的なデータでも Redis などを利用して**ミドルウェア上で保管して共有**する！
+なんでこれで解決できるんだっけ！！！！？？？？
 
 ```sh
 # 開発環境の docker を停止
@@ -125,6 +127,7 @@ make logs
 ```
 
 ## [Medis](https://github.com/luin/medis)
+
 Redis の GUI クライアント
 
 ```sh
@@ -136,6 +139,14 @@ Redis の GUI クライアント
 npm install
 ```
 
+## go-redis
+
+redis version によって違いそう！？
+https://github.com/go-redis/redis#installation
+
+```sh
+go get github.com/go-redis/redis/v8
+```
 
 ## TODO
 
