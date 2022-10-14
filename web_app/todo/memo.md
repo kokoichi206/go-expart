@@ -148,6 +148,47 @@ https://github.com/go-redis/redis#installation
 go get github.com/go-redis/redis/v8
 ```
 
+## JWT
+
+JWT をアクセストークンとして利用する。
+
+アクセストークンには、秘密鍵と公開鍵を利用した RS256 形式の署名にする！
+
+```
+brew install openssl
+echo 'export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"' >> ~/.zshrc
+openssl version
+OpenSSL 3.0.5 5 Jul 2022 (Library: OpenSSL 3.0.5 5 Jul 2022)
+```
+
+秘密鍵と公開鍵の発行
+
+```
+openssl genrsa 4096 > secret.pem
+openssl rsa -pubout < secret.pem > public.pem
+```
+
+JWT の生成には [lestrrat-go/jwx](https://github.com/lestrrat-go/jwx)。
+
+```
+go get github.com/lestrrat-go/jwx/v2
+go get github.com/google/uuid
+```
+
+Json Web Token とは、Base64 URL エンコードされた JSON を使って、二者間で情報をやり取りするための仕様！！
+
+[RFC7519](https://tex2e.github.io/rfc-translater/html/rfc7519.html) で定義。
+
+JWT と署名・暗号化に関わる関連仕様をまとめたものは、JOSE（JSON Object Signing and Encryption）と呼ばれたりする。
+
+### go:embed
+
+ファイルパスを使う方法だと、シングルバイナリで実行可能、というメリットが使えなくなる。
+
+そこで、`go:embed` ディレクティブを使い実行バイナリにファイルを埋め込む。
+
+https://pkg.go.dev/embed
+
 ## TODO
 
 疑問等
