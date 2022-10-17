@@ -7,35 +7,37 @@ import (
 	"github.com/go-playground/validator"
 )
 
-type AddTask struct {
-	Service   AddTaskService
+type Login struct {
+	Service   LoginService
 	Validator *validator.Validate
 }
 
-func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (l *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
 	ctx := r.Context()
-	var b struct {
-		Title string `json:"title" validate:"required"`
+	var body struct {
+		UserName string `json:"user_name" validate:"required"`
+		Password string `json:"password" validate:"required"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
-		// ErrResponse にしたらどうなる？
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
 		}, http.StatusInternalServerError)
 		return
 	}
 
-	err := at.Validator.Struct(b)
+	err := l.Validator.Struct(body)
 	if err != nil {
-		// Validate 失敗 → BadRequest
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
 		}, http.StatusBadRequest)
 		return
 	}
 
-	t, err := at.Service.AddTask(ctx, b.Title)
+	jwt, err := l.Service.Login(ctx, body.UserName, body.Password)
 	if err != nil {
+		// Login に失敗した時は InternalServerError でいいのか？
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
 		}, http.StatusInternalServerError)
@@ -43,7 +45,10 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rsp := struct {
-		ID int `json:"id"`
-	}{ID: int(t.ID)}
+		AccessToken string `json:"access_token"`
+	}{
+		AccessToken: jwt,
+	}
+
 	RespondJSON(ctx, w, rsp, http.StatusOK)
 }

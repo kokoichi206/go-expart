@@ -1,4 +1,4 @@
-.PHONY: help build build-local up down logs ps test run
+.PHONY: help build build-local up down logs ps test run generate
 # make と打った時に何が出てくるか
 .DEFAULT_GOAL := help
 
@@ -36,6 +36,9 @@ migrate:	# Migration
 
 dry-migrate:
 	mysqldef -u todo -p todo -h 127.0.0.1 -P 33306 todo --dry-run < ./_tools/mysql/schema.sql
+
+generate:	## Generate codes
+	go generate ./...
 
 help:	## https://postd.cc/auto-documented-makefile/
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
