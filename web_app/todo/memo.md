@@ -192,6 +192,28 @@ jwt.io: https://jwt.io/
 
 https://pkg.go.dev/embed
 
+## curl memo
+
+```sh
+curl -X POST localhost:18000/register -d '{"name": "admin_user", "password": "test", "role": "admin"}'
+curl -XPOST localhost:18000/login -d '{"user_name": "admin_user", "password": "wrong pw"}'
+curl -XPOST localhost:18000/login -d '{"user_name": "admin_user", "password": "test"}'
+export TODO_TOKEN=eyJhbGci...
+curl -XPOST -H "Authorization: Bearer $TODO_TOKEN" localhost:18000/tasks -d @./handler/testdata/add_task/ok_req.json.golden
+curl -XGET -H "Authorization: Bearer $TODO_TOKEN" localhost:18000/tasks
+
+curl -XGET -H "Authorization: Bearer $TODO_TOKEN" localhost:18000/admin
+
+curl -XGET  localhost:18000/admin
+
+curl -X POST localhost:18000/register -d '{"name": "normal_user", "password": "test", "role": "user"}'
+curl -XPOST localhost:18000/login -d '{"user_name": "normal_user", "password": "test"}'
+curl -XGET -H "Authorization: Bearer $TODO_TOKEN" localhost:18000/admin
+curl -XGET -H "Authorization: Bearer $TODO_TOKEN" localhost:18000/admin
+
+{"message":"not admin"}
+```
+
 ## TODO
 
 疑問等
