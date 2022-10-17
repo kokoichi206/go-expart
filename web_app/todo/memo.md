@@ -181,6 +181,9 @@ Json Web Token とは、Base64 URL エンコードされた JSON を使って、
 
 JWT と署名・暗号化に関わる関連仕様をまとめたものは、JOSE（JSON Object Signing and Encryption）と呼ばれたりする。
 
+jwt.io: https://jwt.io/
+を使うと、正しい署名か確認してくれる。
+
 ### go:embed
 
 ファイルパスを使う方法だと、シングルバイナリで実行可能、というメリットが使えなくなる。
