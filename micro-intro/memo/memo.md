@@ -80,6 +80,10 @@ curl -v localhost:9090/1 -XPUT
 	- https://github.com/gorilla/mux
 	- archived 2022/12/10 !!
 
+## Part 6
+
+- SKU is a object id, which is unique
+
 ## English
 
 - dig into
