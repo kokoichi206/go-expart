@@ -1,3 +1,5 @@
+## Part 1
+
 ```go
 func main() {
 
@@ -30,3 +32,16 @@ http.Error(w, "Ooops", http.StatusBadRequest)
 w.WriteHeader(http.StatusBadRequest)
 w.Write([]byte("Oooops"))
 ```
+
+## Part 2
+
+reference との使い分けがいまいち分かってないからかもしれんけど、なんで w は実態で r は参照なんだっけ
+
+```
+w http.ResponseWriter, r *http.Request
+```
+
+- タイムアウトを設けるのは、良いプラクティス！
+- https://pkg.go.dev/net/http#Server
+- DNS, handshake などのコストを下げるため、コネクションを繋いだままにしたりする
+  - IdleTimeout
