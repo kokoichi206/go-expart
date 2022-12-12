@@ -46,3 +46,20 @@ w http.ResponseWriter, r *http.Request
 - DNS, handshake などのコストを下げるため、コネクションを繋いだままにしたりする
   - IdleTimeout
 - os.signal#Notify: https://pkg.go.dev/os/signal#Notify
+
+## Part 3
+
+REST
+
+- **struct tag** を使って Json 用のアノテーションをつけたりする！
+  - `"-"` で無視することになる！
+  - https://pkg.go.dev/encoding/json
+- [REST by microsoft](https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design)
+
+```sh
+curl -v localhost:9090 -XDELETE
+```
+
+## English
+
+- dig into
