@@ -70,6 +70,8 @@ Standard Library offers a lot.
 
 ```
 curl -v localhost:9090 -d '{"id": 1, "name": "tea"}'
+
+curl -v localhost:9090/1 -XPUT
 ```
 
 ## English
