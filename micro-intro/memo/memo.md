@@ -60,6 +60,19 @@ REST
 curl -v localhost:9090 -XDELETE
 ```
 
+## Part 4
+
+Standard Library offers a lot.
+
+- encoding, decoding のロジックを data に持ってくるのが好き
+- `%#v` で綺麗な出力を行う！
+  - `p.l.Printf("Prod: %#v", prod)`
+
+```
+curl -v localhost:9090 -d '{"id": 1, "name": "tea"}'
+```
+
 ## English
 
 - dig into
+- Never mind
