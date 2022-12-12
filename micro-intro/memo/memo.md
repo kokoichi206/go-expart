@@ -45,3 +45,4 @@ w http.ResponseWriter, r *http.Request
 - https://pkg.go.dev/net/http#Server
 - DNS, handshake などのコストを下げるため、コネクションを繋いだままにしたりする
   - IdleTimeout
+- os.signal#Notify: https://pkg.go.dev/os/signal#Notify
