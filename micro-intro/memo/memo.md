@@ -77,12 +77,19 @@ curl -v localhost:9090/1 -XPUT
 ## Part 5
 
 - gorilla
-	- https://github.com/gorilla/mux
-	- archived 2022/12/10 !!
+  - https://github.com/gorilla/mux
+  - archived 2022/12/10 !!
 
 ## Part 6
 
 - SKU is a object id, which is unique
+
+## Part 7
+
+- goswagger?
+  - https://goswagger.io/
+- meta data
+  - https://goswagger.io/use/spec/meta.html
 
 ## English
 
