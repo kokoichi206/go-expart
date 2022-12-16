@@ -51,6 +51,8 @@ func main() {
 		http.StripPrefix("/images/", http.FileServer(http.Dir(basePath))),
 	)
 
+	gh.HandleFunc("/images/{id:[0-9]+}", fh.AllFiles)
+
 	// create a new server
 	s := http.Server{
 		Addr:         bindAddress,       // configure the bind address

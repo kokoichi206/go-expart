@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"path/filepath"
 
@@ -45,4 +48,35 @@ func (f *Files) saveFile(id, path string, rw http.ResponseWriter, r *http.Reques
 		f.log.Error("Unable to save file", "error", err)
 		http.Error(rw, "Unable to save file", http.StatusInternalServerError)
 	}
+}
+
+func (f *Files) AllFiles(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	f.log.Info("AllFiles", "id", id)
+
+	// f.saveFile(id, fn, rw, r)
+	files, err := ioutil.ReadDir(fmt.Sprintf("imagestore/%s", id))
+	if err != nil {
+		http.Error(
+			rw,
+			fmt.Sprintf("%v", err),
+			http.StatusInternalServerError)
+		return
+	}
+
+	var names []string
+	for _, file := range files {
+		names = append(names, file.Name())
+	}
+	response := AllFilesResponse{
+		Names: names,
+	}
+	e := json.NewEncoder(rw)
+	e.Encode(response)
+}
+
+type AllFilesResponse struct {
+	Names []string `json:"names"`
 }
