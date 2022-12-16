@@ -66,7 +66,7 @@ func (f *Files) AllFiles(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var names []string
+	names := []string{}
 	for _, file := range files {
 		names = append(names, file.Name())
 	}
