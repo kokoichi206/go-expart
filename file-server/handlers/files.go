@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/gorilla/mux"
@@ -49,9 +50,18 @@ func (f *Files) UploadMultipart(rw http.ResponseWriter, r *http.Request) {
 	person := r.FormValue("person")
 	f.log.Info("Process form for person", "person", person)
 
-	file, fh, err :=  r.FormFile("field1")
+	file, fh, err := r.FormFile("field1")
 	if err != nil {
 		f.log.Error("Expected file field1")
+	}
+
+	// Delete All Files
+	files, _ := ioutil.ReadDir(fmt.Sprintf("imagestore/%s", person))
+	for _, file := range files {
+		err = os.Remove(filepath.Join("imagestore", person, file.Name()))
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	path := filepath.Join("1", fh.Filename)
