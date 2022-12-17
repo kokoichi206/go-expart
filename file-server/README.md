@@ -15,3 +15,9 @@ curl localhost:9090/images/1/sfa.png --data-binary @yoiwake.png
 # content-type の指定
 curl -X POST localhost:9090/images/1/sfa.png -F "file=@yoiwake.png;type=image/png"
 ```
+
+## Links
+
+- [multipart/form-data: mozilla](https://developer.mozilla.org/ja/docs/Web/HTTP/Methods/POST)
+  - text and binary, separated by boundary
+  - REST 的にはあんまりやらんかもなぁ
