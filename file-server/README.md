@@ -21,3 +21,11 @@ curl -X POST localhost:9090/images/1/sfa.png -F "file=@yoiwake.png;type=image/pn
 - [multipart/form-data: mozilla](https://developer.mozilla.org/ja/docs/Web/HTTP/Methods/POST)
   - text and binary, separated by boundary
   - REST 的にはあんまりやらんかもなぁ
+
+## Gzip
+
+```sh
+curl -v localhost:9090/images/1/test.png -o file.png
+
+curl -v localhost:9090/images/1/test.png --compressed -o file.png
+```
