@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+// option go_package = "./";
+option go_package = "kokoichi206/go-expart/currency/protos";
+
+service Currency {
+    rpc GetRate(RateRequest) returns (RateResponse);
+}
+
+message RateRequest {
+    string Base = 1;
+    string Destination = 2;
+}
+
+message RateResponse {
+    float Rate = 1;
+}
