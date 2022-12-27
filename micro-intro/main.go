@@ -8,15 +8,30 @@ import (
 	"os/signal"
 	"time"
 
+	// protos "kokoichi206/go-expart/currency/protos/currency"
+	protos "kokoichi206/go-expart/currency/protos/currency"
+
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 	"github.com/kokoichi206/go-expert/micro-intro/handlers"
+	"google.golang.org/grpc"
 )
 
 func main() {
 
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
-	ph := handlers.NewProducts(l)
+
+	// By default, grpc uses http2
+	serverAddr := "localhost:9092"
+	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close()
+	// create client
+	cc := protos.NewCurrencyClient(conn)
+
+	ph := handlers.NewProducts(l, cc)
 
 	sm := mux.NewRouter()
 
@@ -39,7 +54,7 @@ func main() {
 	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	s := &http.Server{
-		Addr:         ":9090",
+		Addr:         ":9091",
 		Handler:      sm,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,

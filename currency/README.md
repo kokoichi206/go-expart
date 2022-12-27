@@ -43,3 +43,12 @@ grpcurl --plaintext -d '{"Base": "GBP", "Destination": "USD"}' localhost:9092 Cu
   "Rate": 0.5
 }
 ```
+
+## エラーハンドリング
+
+REST の時はステータスコードがクライアントとサーバーを繋ぐエラーハンドリングだったが、それが変わる！
+
+## Links
+
+- [Enum](https://developers.google.com/protocol-buffers/docs/reference/proto3-spec#enum_definition)
+- [Creating the client](https://grpc.io/docs/languages/go/basics/#client)
