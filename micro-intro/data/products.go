@@ -1,13 +1,16 @@
 package data
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	protos "kokoichi206/go-expart/currency/protos/currency"
 	"regexp"
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/hashicorp/go-hclog"
 )
 
 // swagger:model
@@ -19,7 +22,7 @@ type Product struct {
 	ID          int     `json:"id"`
 	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price" validate:"gt=0"`
+	Price       float64 `json:"price" validate:"gt=0"`
 	SKU         string  `json:"sku" validate:"required,sku"`
 	CreatedOn   string  `json:"-"`
 	UpdatedOn   string  `json:"-"`
@@ -53,14 +56,44 @@ func validateSKU(fl validator.FieldLevel) bool {
 
 type Products []*Product
 
+type ProductDB struct {
+	currency protos.CurrencyClient
+	log      hclog.Logger
+}
+
+func NewProductDB(c protos.CurrencyClient, l hclog.Logger) *ProductDB {
+	return &ProductDB{
+		currency: c,
+		log:      l,
+	}
+}
+
 // Cleaner way because it's kind of abstruction
 func (p *Products) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
 	return e.Encode(p)
 }
 
-func GetProducts() Products {
-	return productList
+func (p *ProductDB) GetProducts(currency string) (Products, error) {
+	if currency == "" {
+		return productList, nil
+	}
+
+	rate, err := p.getRate(currency)
+	if err != nil {
+		p.log.Error("Unable to get rate", "currency", currency, "error", err)
+		return nil, err
+	}
+	// apply rate
+	pr := Products{}
+	for _, p := range productList {
+		// make a copy
+		np := *p
+		np.Price = np.Price * rate
+		pr = append(pr, &np)
+	}
+
+	return pr, nil
 }
 
 func AddProduct(p *Product) {
@@ -81,6 +114,16 @@ func UpdateProduct(id int, p *Product) error {
 }
 
 var ErrProductNotFound = fmt.Errorf("Product not found")
+
+func (p *ProductDB) getRate(destination string) (float64, error) {
+	// get exchange rate
+	rr := &protos.RateRequest{
+		Base:        protos.Currencies(protos.Currencies_value["EUR"]),
+		Destination: protos.Currencies(protos.Currencies_value[destination]),
+	}
+	resp, err := p.currency.GetRate(context.Background(), rr)
+	return resp.Rate, err
+}
 
 func findProduct(id int) (*Product, int, error) {
 	for i, p := range productList {

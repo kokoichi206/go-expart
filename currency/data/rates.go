@@ -48,7 +48,21 @@ func (e *ExchangeRates) getRates() error {
 		e.rates[c.Currency] = r
 	}
 
+	e.rates["EUR"] = 1
+
 	return nil
+}
+
+func (e *ExchangeRates) GetRate(base, dest string) (float64, error) {
+	br, ok := e.rates[base]
+	if !ok {
+		return 0, fmt.Errorf("Rate not found for currency %s", base)
+	}
+	dr, ok := e.rates[dest]
+	if !ok {
+		return 0, fmt.Errorf("Rate not found for currency %s", dest)
+	}
+	return dr / br, nil
 }
 
 type Cubes struct {

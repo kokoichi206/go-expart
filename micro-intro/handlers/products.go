@@ -17,7 +17,6 @@ package handlers
 import (
 	"context"
 	"fmt"
-	protos "kokoichi206/go-expart/currency/protos/currency"
 	"log"
 	"net/http"
 
@@ -33,12 +32,12 @@ type productsResponseWrapper struct {
 }
 
 type Products struct {
-	l *log.Logger
-	cc protos.CurrencyClient
+	l         *log.Logger
+	productDB *data.ProductDB
 }
 
-func NewProducts(l *log.Logger, cc protos.CurrencyClient) *Products {
-	return &Products{l, cc}
+func NewProducts(l *log.Logger, pdb *data.ProductDB) *Products {
+	return &Products{l, pdb}
 }
 
 // use empty struct as a key

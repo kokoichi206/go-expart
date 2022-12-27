@@ -13,6 +13,8 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
+	"github.com/hashicorp/go-hclog"
+	"github.com/kokoichi206/go-expert/micro-intro/data"
 	"github.com/kokoichi206/go-expert/micro-intro/handlers"
 	"google.golang.org/grpc"
 )
@@ -20,6 +22,7 @@ import (
 func main() {
 
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
+	hl := hclog.Default()
 
 	// By default, grpc uses http2
 	serverAddr := "localhost:9092"
@@ -31,7 +34,9 @@ func main() {
 	// create client
 	cc := protos.NewCurrencyClient(conn)
 
-	ph := handlers.NewProducts(l, cc)
+	db := data.NewProductDB(cc, hl)
+
+	ph := handlers.NewProducts(l, db)
 
 	sm := mux.NewRouter()
 
