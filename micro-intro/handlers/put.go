@@ -17,7 +17,7 @@ func (p *Products) UpdateProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p.l.Println("Handle PUT Product", id)
+	p.l.Debug("Handle PUT Product", id)
 	prod := r.Context().Value(KeyProduct{}).(*data.Product)
 
 	err = data.UpdateProduct(id, prod)

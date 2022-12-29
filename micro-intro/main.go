@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,7 +20,6 @@ import (
 
 func main() {
 
-	l := log.New(os.Stdout, "product-api", log.LstdFlags)
 	hl := hclog.Default()
 
 	// By default, grpc uses http2
@@ -36,12 +34,13 @@ func main() {
 
 	db := data.NewProductDB(cc, hl)
 
-	ph := handlers.NewProducts(l, db)
+	ph := handlers.NewProducts(hl, db)
 
 	sm := mux.NewRouter()
 
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", ph.GetProducts)
+	getRouter.HandleFunc("/products", ph.GetProducts)
+	getRouter.HandleFunc("/products", ph.GetProducts).Queries("currency", "{[A-Z]{3}}")
 
 	putRouter := sm.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
@@ -58,9 +57,11 @@ func main() {
 	getRouter.Handle("/docs", sh)
 	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
+	// hclog は standardlog に変更可能。
 	s := &http.Server{
 		Addr:         ":9091",
 		Handler:      sm,
+		ErrorLog:     hl.StandardLogger(&hclog.StandardLoggerOptions{}),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,
@@ -69,7 +70,8 @@ func main() {
 	go func() {
 		err := s.ListenAndServe()
 		if err != nil {
-			l.Fatal(err)
+			hl.Error(err.Error())
+			os.Exit(1)
 		}
 	}()
 
@@ -78,7 +80,7 @@ func main() {
 	signal.Notify(sigChan, os.Kill)
 
 	sig := <-sigChan
-	l.Println("Recieved terminal, graceful shutdown", sig)
+	hl.Debug("Recieved terminal, graceful shutdown", sig)
 	// Timeout Context
 	tc, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(tc)

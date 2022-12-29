@@ -17,9 +17,9 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 
+	"github.com/hashicorp/go-hclog"
 	"github.com/kokoichi206/go-expert/micro-intro/data"
 )
 
@@ -32,11 +32,11 @@ type productsResponseWrapper struct {
 }
 
 type Products struct {
-	l         *log.Logger
+	l         hclog.Logger
 	productDB *data.ProductDB
 }
 
-func NewProducts(l *log.Logger, pdb *data.ProductDB) *Products {
+func NewProducts(l hclog.Logger, pdb *data.ProductDB) *Products {
 	return &Products{l, pdb}
 }
 
@@ -56,7 +56,7 @@ func (p *Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 		// validate the product
 		err = prod.Validate()
 		if err != nil {
-			p.l.Println(w, "[ERROR] validating product", err)
+			p.l.Error("[ERROR] validating product", err)
 			http.Error(
 				w,
 				fmt.Sprintf("Error validating product: %s", err),

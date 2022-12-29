@@ -12,7 +12,7 @@ import (
 // GetProducts returns the products from the data store
 func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 
-	p.l.Println("Handle Get Products")
+	p.l.Debug("Handle Get Products")
 
 	cur := r.URL.Query().Get("currency")
 
