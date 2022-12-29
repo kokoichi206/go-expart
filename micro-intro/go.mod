@@ -8,6 +8,8 @@ require (
 	github.com/go-openapi/runtime v0.25.0
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/gorilla/mux v1.8.0
+	github.com/hashicorp/go-hclog v1.4.0
+	google.golang.org/grpc v1.51.0
 	kokoichi206/go-expart/currency v0.0.0-00010101000000-000000000000
 )
 
@@ -29,7 +31,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/hashicorp/go-hclog v1.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
@@ -43,7 +44,6 @@ require (
 	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
-	google.golang.org/grpc v1.51.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

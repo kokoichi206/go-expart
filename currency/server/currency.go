@@ -13,11 +13,19 @@ import (
 type Currency struct {
 	log hclog.Logger
 	protos.UnimplementedCurrencyServer
-	rates *data.ExchangeRates
+	rates         *data.ExchangeRates
+	subscriptions map[protos.Currency_SubscribeRatesServer][]*protos.RateRequest
 }
 
 func NewCurrency(l hclog.Logger, e *data.ExchangeRates) *Currency {
-	return &Currency{log: l, rates: e}
+	c := &Currency{
+		log:           l,
+		rates:         e,
+		subscriptions: make(map[protos.Currency_SubscribeRatesServer][]*protos.RateRequest),
+	}
+	go c.handleUpdates()
+
+	return c
 }
 
 func (c *Currency) GetRate(ctx context.Context, in *protos.RateRequest) (*protos.RateResponse, error) {
@@ -31,36 +39,57 @@ func (c *Currency) GetRate(ctx context.Context, in *protos.RateRequest) (*protos
 	return &protos.RateResponse{Rate: rate}, nil
 }
 
+func (c *Currency) handleUpdates() {
+	ru := c.rates.MonitorRates(5 * time.Second)
+	for range ru {
+		c.log.Info("Got updated rates")
+
+		// loop over subscribed clients
+		for k, v := range c.subscriptions {
+			// loop over subscribed rates
+			for _, rr := range v {
+				r, err := c.rates.GetRate(rr.GetBase().String(), rr.GetDestination().String())
+				if err != nil {
+					c.log.Error("Unable to get update rate", "base", rr.GetBase().String())
+				}
+
+				err = k.Send(&protos.RateResponse{Base: rr.Base, Destination: rr.Destination, Rate: r})
+				if err != nil {
+					c.log.Error("Unable to send updated rate")
+				}
+			}
+		}
+	}
+}
+
 func (c *Currency) mustEmbedUnimplementedCurrencyServer() {
 	c.log.Info("hogee")
 }
 
 func (c *Currency) SubscribeRates(src protos.Currency_SubscribeRatesServer) error {
 
-	go func() {
-		for {
-			// Blocking method
-			rr, err := src.Recv()
-			if err == io.EOF {
-				c.log.Info("Client closed connection!")
-				break
-			}
-			if err != nil {
-				c.log.Error("Unable to read from client", "error", err)
-				break
-			}
-
-			c.log.Info("Handle client request", "request", rr)
-		}	
-	}()
-
 	for {
-		err := src.Send(&protos.RateResponse{Rate: 12.1})
+		// Blocking method
+		rr, err := src.Recv()
+		if err == io.EOF {
+			c.log.Info("Client closed connection!")
+			break
+		}
 		if err != nil {
+			c.log.Error("Unable to read from client", "error", err)
 			return err
 		}
 
-		// dummy
-		time.Sleep(5 * time.Second)
+		c.log.Info("Handle client request", "request", rr)
+
+		rrs, ok := c.subscriptions[src]
+		if !ok {
+			rrs = []*protos.RateRequest{}
+		}
+
+		rrs = append(rrs, rr)
+		c.subscriptions[src] = rrs
 	}
+
+	return nil
 }
