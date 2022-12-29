@@ -71,7 +71,13 @@ func (c *Currency) handleUpdates() {
 					c.log.Error("Unable to get update rate", "base", rr.GetBase().String())
 				}
 
-				err = k.Send(&protos.RateResponse{Base: rr.Base, Destination: rr.Destination, Rate: r})
+				err = k.Send(
+					&protos.StreamingRateResponse{
+						Message: &protos.StreamingRateResponse_RateResponse{
+							RateResponse: &protos.RateResponse{Base: rr.Base, Destination: rr.Destination, Rate: r},
+						},
+					},
+				)
 				if err != nil {
 					c.log.Error("Unable to send updated rate")
 				}
@@ -105,6 +111,34 @@ func (c *Currency) SubscribeRates(src protos.Currency_SubscribeRatesServer) erro
 			rrs = []*protos.RateRequest{}
 		}
 
+		var validationError *status.Status
+		for _, v := range rrs {
+			if v.Base == rr.Base && v.Destination == rr.Destination {
+				validationError = status.Newf(
+					codes.AlreadyExists,
+					"Unable to subscribe for currency as subscription already exists",
+				)
+				validationError, err = validationError.WithDetails(rr)
+				if err != nil {
+					c.log.Error("Unable to add metadata to error", err)
+					break
+
+				}
+
+				if validationError != nil {
+					src.Send(
+						&protos.StreamingRateResponse{
+							Message: &protos.StreamingRateResponse_Error{
+								Error: validationError.Proto(),
+							},
+						},
+					)
+					continue
+				}
+			}
+		}
+
+		// all ok
 		rrs = append(rrs, rr)
 		c.subscriptions[src] = rrs
 	}

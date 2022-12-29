@@ -89,12 +89,21 @@ func (p *ProductDB) handleUpdates() {
 
 	for {
 		rr, err := sub.Recv()
-		if err != nil {
-			p.log.Error("Error receiving message", err)
+
+		if grpcError := rr.GetError(); grpcError != nil {
+			p.log.Error("Error subscribing for rates", "error", grpcError)
+			continue
 		}
 
-		// updates cache
-		p.rates[rr.Destination.String()] = rr.Rate
+		if resp := rr.GetRateResponse(); resp != nil {
+
+			if err != nil {
+				p.log.Error("Error receiving message", err)
+			}
+
+			// updates cache
+			p.rates[resp.Destination.String()] = resp.Rate
+		}
 	}
 }
 
