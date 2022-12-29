@@ -44,6 +44,17 @@ grpcurl --plaintext -d '{"Base": "GBP", "Destination": "USD"}' localhost:9092 Cu
 }
 ```
 
+```sh
+grpcurl --plaintext --msg-template -d @ localhost:9092 Currency/SubscribeRates
+
+grpcurl --plaintext --msg-template -d @ localhost:9092 describe Currency.SubscribeRates
+Warning: The -d argument is not used with 'list' or 'describe' verb.
+Currency.SubscribeRates is a method:
+rpc SubscribeRates ( stream .RateRequest ) returns ( stream .RateResponse );
+
+grpcurl --plaintext --msg-template -d @ localhost:9092 describe .RateRequest
+```
+
 ## エラーハンドリング
 
 REST の時はステータスコードがクライアントとサーバーを繋ぐエラーハンドリングだったが、それが変わる！

@@ -2,8 +2,10 @@ package server
 
 import (
 	"context"
+	"io"
 	"kokoichi206/go-expart/currency/data"
 	protos "kokoichi206/go-expart/currency/protos/currency"
+	"time"
 
 	"github.com/hashicorp/go-hclog"
 )
@@ -31,4 +33,34 @@ func (c *Currency) GetRate(ctx context.Context, in *protos.RateRequest) (*protos
 
 func (c *Currency) mustEmbedUnimplementedCurrencyServer() {
 	c.log.Info("hogee")
+}
+
+func (c *Currency) SubscribeRates(src protos.Currency_SubscribeRatesServer) error {
+
+	go func() {
+		for {
+			// Blocking method
+			rr, err := src.Recv()
+			if err == io.EOF {
+				c.log.Info("Client closed connection!")
+				break
+			}
+			if err != nil {
+				c.log.Error("Unable to read from client", "error", err)
+				break
+			}
+
+			c.log.Info("Handle client request", "request", rr)
+		}	
+	}()
+
+	for {
+		err := src.Send(&protos.RateResponse{Rate: 12.1})
+		if err != nil {
+			return err
+		}
+
+		// dummy
+		time.Sleep(5 * time.Second)
+	}
 }
