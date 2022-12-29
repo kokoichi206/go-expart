@@ -59,6 +59,8 @@ grpcurl --plaintext --msg-template -d @ localhost:9092 describe .RateRequest
 
 REST の時はステータスコードがクライアントとサーバーを繋ぐエラーハンドリングだったが、それが変わる！
 
+- [Error handling: grpc.io](https://grpc.io/docs/guides/error/)
+
 ## Links
 
 - [Enum](https://developers.google.com/protocol-buffers/docs/reference/proto3-spec#enum_definition)

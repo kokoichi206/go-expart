@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-hclog"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Currency struct {
@@ -30,6 +32,22 @@ func NewCurrency(l hclog.Logger, e *data.ExchangeRates) *Currency {
 
 func (c *Currency) GetRate(ctx context.Context, in *protos.RateRequest) (*protos.RateResponse, error) {
 	c.log.Info("Handle GetRate", "base", in.GetBase(), "destination", in.GetDestination())
+
+	if in.Base == in.Destination {
+		// grpc/status
+		// status.Errorf, status.Newf ...etc
+		err := status.Newf(
+			codes.InvalidArgument,
+			"Base currency %s cannot be the same as the destination currency %s",
+			in.Base.String(), in.Destination.String(),
+		)
+		err, wde := err.WithDetails(in)
+		if wde != nil {
+			return nil, wde
+		}
+
+		return nil, err.Err()
+	}
 
 	rate, err := c.rates.GetRate(in.GetBase().String(), in.GetDestination().String())
 	if err != nil {
