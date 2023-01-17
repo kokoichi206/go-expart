@@ -6,4 +6,8 @@ import (
 
 func main() {
 	example.TestCredential()
+
+	example.ReceiverTest()
+
+	example.TagTest()
 }
