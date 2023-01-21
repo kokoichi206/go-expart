@@ -10,4 +10,6 @@ func main() {
 	example.ReceiverTest()
 
 	example.TagTest()
+
+	example.Interface()
 }
