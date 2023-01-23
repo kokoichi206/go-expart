@@ -12,4 +12,8 @@ func main() {
 	example.TagTest()
 
 	example.Interface()
+
+	example.ErrorIs()
+
+	example.FatalCheck()
 }
