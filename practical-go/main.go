@@ -4,6 +4,8 @@ import (
 	"practical-go/example"
 )
 
+var version string
+
 func main() {
 	example.TestCredential()
 
