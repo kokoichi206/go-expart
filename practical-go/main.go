@@ -17,5 +17,7 @@ func main() {
 
 	example.ErrorIs()
 
-	example.FatalCheck()
+	// example.FatalCheck()
+
+	example.ReadJson()
 }
