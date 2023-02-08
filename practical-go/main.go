@@ -20,4 +20,6 @@ func main() {
 	// example.FatalCheck()
 
 	example.ReadJson()
+
+	example.LogPackage()
 }
