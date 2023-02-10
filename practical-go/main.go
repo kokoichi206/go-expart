@@ -23,9 +23,11 @@ func main() {
 
 	// example.LogPackage()
 
-	example.S3Example()
+	// example.S3Example()
 
-	example.GoCDK()
+	// example.GoCDK()
 
-	example.DynamoDB()
+	// example.DynamoDB()
+
+	example.UnknownTasks()
 }
