@@ -118,3 +118,33 @@ func UnknownTasks() {
 	total := TotalFileSize()
 	fmt.Println("Total Size: ", total)
 }
+
+func fixedTasks(taskSrcs []Task) int64 {
+	// 数がわかっている場合は、、ちょうどだけ作るのがよい！
+	tasks := make(chan Task, len(taskSrcs))
+	results := make(chan Result)
+	for _, src := range taskSrcs {
+		tasks <- src
+	}
+	close(tasks)
+
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go worker(i, tasks, results)
+	}
+
+	var count int
+	var size int64
+	for {
+		result := <- results
+		count += 1
+		if result.Err != nil {
+			fmt.Printf("err %v for %s\n", result.Err, result.Task)
+		} else {
+			size += result.Value
+		}
+		if count == len(taskSrcs) {
+			break
+		}
+	}
+	return size
+}
