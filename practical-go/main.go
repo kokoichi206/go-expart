@@ -7,19 +7,25 @@ import (
 var version string
 
 func main() {
-	example.TestCredential()
+	// example.TestCredential()
 
-	example.ReceiverTest()
+	// example.ReceiverTest()
 
-	example.TagTest()
+	// example.TagTest()
 
-	example.Interface()
+	// example.Interface()
 
-	example.ErrorIs()
+	// example.ErrorIs()
 
-	// example.FatalCheck()
+	// // example.FatalCheck()
 
-	example.ReadJson()
+	// example.ReadJson()
 
-	example.LogPackage()
+	// example.LogPackage()
+
+	example.S3Example()
+
+	example.GoCDK()
+
+	example.DynamoDB()
 }
