@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <title>WebSockets</title>
+
+    <script type="text/javascript" src="main.js"></script>
+  </head>
+
+  <body>
+    <div class="center">
+      <h1>WS Chat Application</h1>
+      <h3 id="chat-header">Currently in chat: general</h3>
+
+      <form id="chatroom-selection">
+        <label for="chatroom">Chatroom:</label>
+        <input type="text" id="chatroom" name="chatroom" /><br /><br />
+        <input type="submit" value="Change chatroom" />
+      </form>
+
+      <br />
+      <textarea
+        class="messagearea"
+        id="chatmessages"
+        readonly
+        name="chatmessages"
+        rows="4"
+        cols="50"
+        placeholder="Welcome to chatroom"
+      ></textarea>
+
+      <form id="chatroom-message">
+        <label for="message">Message:</label>
+        <input type="text" id="message" name="message" /><br /><br />
+        <input type="submit" value="Send message" />
+      </form>
+    </div>
+
+    <style type="text/css">
+      body {
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .center {
+        margin: auto;
+        width: 50%;
+        border: 3px solid green;
+        padding: 10px;
+      }
+    </style>
+  </body>
+</html>
