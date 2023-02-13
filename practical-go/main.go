@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"practical-go/example"
 )
 
@@ -29,5 +30,9 @@ func main() {
 
 	// example.DynamoDB()
 
-	example.UnknownTasks()
+	// example.UnknownTasks()
+
+	// example.TimeoutContext()
+
+	example.ErrorGroupExample(context.Background())
 }
