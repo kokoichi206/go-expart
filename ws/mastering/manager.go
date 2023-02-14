@@ -43,6 +43,18 @@ func NewManager(ctx context.Context) *Manager {
 
 func (m *Manager) setupEventHandlers() {
 	m.handlers[EventSendMessage] = SendMessage
+	m.handlers[EventChangeRoom] = ChatRoomHandler
+}
+
+func ChatRoomHandler(event Event, c *Client) error {
+	var changeRoomEvent ChangeRoomEvent
+
+	if err := json.Unmarshal(event.Payload, &changeRoomEvent); err != nil {
+		return fmt.Errorf(err.Error())
+	}
+
+	c.chatroom = changeRoomEvent.Name
+	return nil
 }
 
 func SendMessage(event Event, c *Client) error {
@@ -69,7 +81,9 @@ func SendMessage(event Event, c *Client) error {
 	}
 
 	for client := range c.manager.clients {
-		client.egress <- outgoingEvent
+		if client.chatroom == c.chatroom {
+			client.egress <- outgoingEvent
+		}
 	}
 
 	return nil

@@ -22,6 +22,8 @@ type Client struct {
 
 	manager *Manager
 
+	chatroom string
+
 	// egress is used to avoid concurrent writes on the ws conn
 	egress chan Event
 }
