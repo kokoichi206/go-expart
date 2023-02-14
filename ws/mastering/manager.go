@@ -46,7 +46,32 @@ func (m *Manager) setupEventHandlers() {
 }
 
 func SendMessage(event Event, c *Client) error {
-	fmt.Println(event)
+	// fmt.Println(event)
+	var chatevent SendMessageEvent
+
+	if err := json.Unmarshal(event.Payload, &chatevent); err != nil {
+		return fmt.Errorf("bad payload in request: %v", err)
+	}
+
+	var broadMessage NewMessageEvent
+	broadMessage.Sent = time.Now()
+	broadMessage.Message = chatevent.Message
+	broadMessage.From = chatevent.From
+
+	data, err := json.Marshal(broadMessage)
+	if err != nil {
+		return fmt.Errorf("failed to marshal broadcast message: %v", err)
+	}
+
+	outgoingEvent := Event{
+		Payload: data,
+		Type:    EventNewMessage,
+	}
+
+	for client := range c.manager.clients {
+		client.egress <- outgoingEvent
+	}
+
 	return nil
 }
 
@@ -151,7 +176,7 @@ func checkOrigin(r *http.Request) bool {
 
 	switch origin {
 	case "https://localhost:8080":
-	// case "http://localhost:8081":
+		// case "http://localhost:8081":
 		return true
 	default:
 		return false

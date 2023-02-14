@@ -7,19 +7,44 @@ class Event {
   }
 }
 
+class SendMessageEvent {
+  constructor(message, from) {
+    this.message = message;
+    this.from = from;
+  }
+}
+
+class NewMessageEvent {
+  constructor(message, from, sent) {
+    this.message = message;
+    this.from = from;
+    this.sent = sent;
+  }
+}
+
 function routeEvent(event) {
   if (event.type == undefined) {
     alert("No type field in even");
-
-    switch (event.type) {
-      case "new_message":
-        console.log("NEW Message!");
-        break;
-      default:
-        alert("unsupported message type!");
-        break;
-    }
   }
+  switch (event.type) {
+    case "new_message":
+      console.log("NEW Message!");
+      const messageEvent = Object.assign(new NewMessageEvent(), event.payload);
+      appendChatMessage(messageEvent);
+      break;
+    default:
+      alert("unsupported message type!");
+      break;
+  }
+}
+
+function appendChatMessage(messageEvent) {
+  const date = new Date(messageEvent.sent);
+  console.log("date.toLocaleString: " + date.toLocaleString());
+  const formattedMsg = `${date.toLocaleString()}: ${messageEvent.message}`;
+  textarea = document.getElementById("chatmessages");
+  textarea.innerHTML = textarea.innerHTML + "\n" + formattedMsg;
+  textarea.scrollTop = textarea.scrollHeight;
 }
 
 function sendEvent(eventName, payload) {
@@ -38,9 +63,11 @@ function changeChatRoom() {
 function sendMessage() {
   const newMessage = document.getElementById("message");
   if (newMessage != null) {
+    // message, username
+    let outgoingEvent = new SendMessageEvent(newMessage.value, "kokoichi");
     console.log(newMessage);
     // conn.send(newMessage.value);
-    sendEvent("send_message", newMessage.value);
+    sendEvent("send_message", outgoingEvent);
   }
   return false;
 }
@@ -93,7 +120,7 @@ function connectWebsocket(otp) {
 
     conn.onmessage = function (evt) {
       // console.log(evt);
-      const eventData = JSON.parse(eve.data);
+      const eventData = JSON.parse(evt.data);
       const event = Object.assign(new Event(), eventData);
       routeEvent(event);
     };
