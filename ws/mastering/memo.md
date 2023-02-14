@@ -17,3 +17,10 @@
 - Error
 - Message
 - Open
+
+## Auth
+
+- Regular HTTP auth
+  - one-time password, ticket -> parameter
+  - this approach
+- allow connect and authenticate
