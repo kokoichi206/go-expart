@@ -76,13 +76,15 @@ func JoinRoomRequestHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		var msg broadcastMsg
 
-		err := ws.ReadJSON(&w)
+		err := ws.ReadJSON(&msg.Message)
 		if err != nil {
 			log.Fatal("Read Error: ", err)
 		}
 
 		msg.Client = ws
 		msg.RoomID = roomID
+
+		log.Printf("passed msg: %s", msg.Message)
 
 		broadcast <- msg
 	}
