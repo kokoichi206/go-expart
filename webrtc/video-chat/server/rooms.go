@@ -2,9 +2,10 @@ package server
 
 import (
 	"log"
+	"math/rand"
 	"sync"
+	"time"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -32,19 +33,18 @@ func (r *RoomMap) CreateRoom() string {
 	r.Mutex.Lock()
 	defer r.Mutex.Unlock()
 
-	roomID := generateUUID()
+	rand.Seed(time.Now().UnixNano())
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+	b := make([]rune, 8)
+
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+
+	roomID := string(b)
 	r.Map[roomID] = []Participant{}
 
-	log.Println("Room created Map -> ", r)
 	return roomID
-}
-
-func generateUUID() string {
-	u, err := uuid.NewRandom()
-	if err != nil {
-		return ""
-	}
-	return u.String()
 }
 
 func (r *RoomMap) InsertIntoRoom(roomID string, host bool, conn *websocket.Conn) {

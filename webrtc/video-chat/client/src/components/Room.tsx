@@ -19,7 +19,6 @@ const Room = (props) => {
     const constraints = {
       audio: true,
       video: {
-        // 1 かどうかは laptop かどうか関係？
         deviceId: cameras[0].deviceId,
       },
     };
@@ -36,12 +35,9 @@ const Room = (props) => {
       userVideo.current.srcObject = stream;
       userStream.current = stream;
 
-      const id = props.match.params.roomID;
-      if (!webSocketRef.current) {
-        webSocketRef.current = new WebSocket(
-          `ws://localhost:8080/join?roomID=${id}`
-        );
-      }
+      webSocketRef.current = new WebSocket(
+        `ws://localhost:8080/join?roomID=${props.match.params.roomID}`
+      );
 
       webSocketRef.current.addEventListener("open", () => {
         webSocketRef.current.send(JSON.stringify({ join: true }));
@@ -69,11 +65,11 @@ const Room = (props) => {
         }
 
         if (message.iceCandidate) {
-          console.log("Receiving and adding ice candidate");
+          console.log("Receiving and Adding ICE Candidate");
           try {
             await peerRef.current.addIceCandidate(message.iceCandidate);
-          } catch (e) {
-            console.log("Error when receiving ice candidate: ", e);
+          } catch (err) {
+            console.log("Error Receiving ICE Candidate", err);
           }
         }
       });
@@ -81,8 +77,7 @@ const Room = (props) => {
   });
 
   const handleOffer = async (offer) => {
-    console.log("Received offer, creating answer");
-
+    console.log("Received Offer, Creating Answer");
     peerRef.current = createPeer();
 
     await peerRef.current.setRemoteDescription(
@@ -102,7 +97,7 @@ const Room = (props) => {
   };
 
   const callUser = () => {
-    console.log("Calling other user");
+    console.log("Calling Other User");
     peerRef.current = createPeer();
 
     userStream.current.getTracks().forEach((track) => {
@@ -124,18 +119,18 @@ const Room = (props) => {
     return peer;
   };
 
-  const handleNegotiationNeeded = () => {
+  const handleNegotiationNeeded = async () => {
     console.log("Creating offer...");
 
     try {
-      const myOffer = peerRef.current.createOffer();
-      peerRef.current.setLocalDescription(myOffer);
+      const myOffer = await peerRef.current.createOffer();
+      await peerRef.current.setLocalDescription(myOffer);
 
       webSocketRef.current.send(
         JSON.stringify({ offer: peerRef.current.localDescription })
       );
     } catch (e) {
-      console.log("Error when ");
+      console.log("Error when ", err);
     }
   };
   const handleIceCandidateEvent = (e) => {

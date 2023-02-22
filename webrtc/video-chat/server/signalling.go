@@ -84,7 +84,7 @@ func JoinRoomRequestHandler(w http.ResponseWriter, r *http.Request) {
 		msg.Client = ws
 		msg.RoomID = roomID
 
-		log.Printf("passed msg: %s", msg.Message)
+		log.Println(msg.Message)
 
 		broadcast <- msg
 	}
