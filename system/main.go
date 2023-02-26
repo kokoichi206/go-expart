@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 )
@@ -10,9 +11,15 @@ import (
 // Practice about Concurrent & Parallel
 //
 // Especially, using these functions
-//   goroutines
+//
+//	goroutines
 func main() {
-	calcLoan()
+	fmt.Println("Hello world")
+	// calcLoan()
+	var builder strings.Builder
+	builder.Write([]byte("strings.Builder write\n"))
+	fmt.Println(builder.String())
+
 }
 
 func calc(id, price int, interestRate float64, year int) {

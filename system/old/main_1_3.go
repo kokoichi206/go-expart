@@ -76,6 +76,7 @@ func csvWrite() {
 	w := csv.NewWriter(file)
 	w.Comma = '\t'
 
+	// w.WriteAll(records) の中では
 	for _, record := range records {
 		if err := w.Write(record); err != nil {
 			log.Fatalln("error writing record to csv:", err)
