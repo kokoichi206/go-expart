@@ -28,6 +28,10 @@ var (
 //
 //	goroutines
 func main() {
+	fmt.Printf("time.Now(): %v\n", time.Now())
+	<-time.After(10 * time.Second)
+	fmt.Printf("time.Now(): %v\n", time.Now())
+
 	var stream io.Reader
 	stream = io.MultiReader(computer, system, karin)
 	io.Copy(os.Stdout, stream)
