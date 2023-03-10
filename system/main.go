@@ -22,12 +22,19 @@ var (
 	karin    = strings.NewReader("KARIN")
 )
 
+const interval = 1 * time.Second
+
 // Practice about Concurrent & Parallel
 //
 // Especially, using these functions
 //
 //	goroutines
 func main() {
+	ticker := time.Tick(interval)
+	for now := range ticker {
+		fmt.Println("Tick: ", now.String())
+	}
+
 	fmt.Printf("time.Now(): %v\n", time.Now())
 	<-time.After(10 * time.Second)
 	fmt.Printf("time.Now(): %v\n", time.Now())

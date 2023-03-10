@@ -411,9 +411,20 @@ https://api.github.com/repos/kokoichi206/kokoichi206/issues
 HTTP でいうところの1つのリクエストは、HTTP/2 ではストリームという単位で扱われる。
 
 ## sec 7
+
 UDP はコネクションレスで、誰と繋がってるかを意識しない。複数のコンピュータに同時にメッセージを送ることが可能なマルチキャストとブロードキャストのサポート！DNS, NTP, ストリーミング動画, WebRTC などが UDP を利用
 
 TCPには再送処理とフロー処理がある。また、ハンドシェイクに 1.5 RTT 分の時間がかかる。
+往復 3 RTT はでかい。。。
+
+### NTP
+
+- 最上位に原子時計などの正確な情報源
+  - 通信遅延を、往路と復路の時間が同一として見積もる！
+    - この際に、再送処理が発生しうる TCP だと適さない
+    - UDP を使う
+- [Let's make an NTP client in Go](https://medium.com/learning-the-go-programming-language/lets-make-an-ntp-client-in-go-287c4b9a969f)
+
 
 ## sec 8
 
