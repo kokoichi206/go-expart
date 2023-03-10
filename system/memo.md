@@ -180,9 +180,11 @@ size, err := r.Read(buffer)
 読み込み処理の方がめんどくさい。
 
 ### io.Reader の補助関数
+
 Python, Ruby 等では、補助的なメソッドもファイルオブジェクトが持ってたりするが、Go言語では特別なもの以外はこのような外部のヘルパー関数を使って実現する。
 
 #### コピーの補助関数
+
 io.Reader から io.Writer にそのままデータを渡したい時！ファイルを開いてそのまま HTTP で転送したいとか、ハッシュ値を計算したいとか、いろいろなケースで使える
 
 ``` go
@@ -190,12 +192,33 @@ writeSize, err := io.Copy(writer, reader)
 writeSize, err := io.CopyN(writer, reader, size)
 ```
 
+### Interface
+
+- io.Closer
+- io.Seeker
+- io.ReadAt
+- 複合インタフェース
+  - io.ReadWriter
+  - io.ReadSeeker
+  - io.ReadCloser
+  - io.ReadWriteSeeker
+  - ...
+  - 
+
+### いろいろ
+
+- os.Stdin
+- os.File
+- 
+
 ### エンディアン変換
+
 主流のCPUはリトルエンディアンであり、小さい桁数からメモリに格納される（0x2710 -> 10,27,0,0）。
 
 しかし、ネットワーク上で転送されるデータの多くは、大きい桁からメモリに格納されるビックエンディアンであるため、修正がが必要となる！
 
 ### png ファイルを見てみる
+
 PNGファイルはバイナリフォーマット。先頭の 8byte がシグニチャとなっている。
 
 ### format print
