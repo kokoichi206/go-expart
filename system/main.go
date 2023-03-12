@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"sync"
@@ -30,6 +31,16 @@ const interval = 1 * time.Second
 //
 //	goroutines
 func main() {
+	if err := traverse(); err != nil {
+		return
+	}
+	fmt.Printf("os.PathSeparator: %v\n", os.PathSeparator)
+	dir, name := filepath.Split(os.Getenv("GOPATH"))
+	fmt.Printf("dir: %v\n", dir)
+	fmt.Printf("name: %v\n", name)
+	fragments := strings.Split(os.Getenv("GOPATH"), string(filepath.Separator))
+	fmt.Printf("fragments: %v\n", fragments)
+
 	ticker := time.Tick(interval)
 	for now := range ticker {
 		fmt.Println("Tick: ", now.String())
@@ -83,6 +94,16 @@ func main() {
 	for _, chunk := range chunks {
 		dumpChunk(chunk)
 	}
+}
+
+func appendToFile() {
+	// 追記モードでファイルを開く！
+	file, err := os.OpenFile("README.md", os.O_RDWR|os.O_APPEND, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	io.WriteString(file, "test dayo")
 }
 
 func randFile() {
