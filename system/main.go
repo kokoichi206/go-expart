@@ -14,6 +14,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -31,6 +32,7 @@ const interval = 1 * time.Second
 //
 //	goroutines
 func main() {
+	syscall.Kqueue()
 	if err := traverse(); err != nil {
 		return
 	}
