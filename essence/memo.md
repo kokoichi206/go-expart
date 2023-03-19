@@ -51,3 +51,73 @@
   - 全てを名前で伝える！
 - レイアウト
   - 実行ファイルを提供する場合は cmd 配下に実行ファイル名のディレクトリ + main.go
+
+## sec 4
+
+``` sh
+$ python
+>>> import this
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
+```
+
+- Zen of Python のうち、以下の2つを重視している
+  - Explicit is better than implicit
+  - Simple is better than complex
+- blank import
+  - db のドライバの register など
+
+``` sh
+go install golang.org/x/tools/cmd/stringer@latest
+```
+
+- NDJSON: Newline Delimited JSON
+- path vs filepath
+  - path: URL などの仮想的なパスの操作
+  - filepath: 物理的なパス
+- filepath.Walk よりも、filepath.WalkDir の方がパフォーマンスが良くなる！
+  - filepath.Walk は検索した各エントリに対して os.Lstat を呼び出す実装のため
+- context package
+  - cancel, timeout
+- build constraints
+- cgo: go から c 言語を扱うための仕組み！
+- デフォルト引数
+  - 可変個引数
+  - Functional Options Pattern
+- internal パッケージ
+  - 意味はわかる
+  - 使ってる例がわからない
+  - ライブラリ的なのを作らないと分からないか
+    - 複雑なライブラリ作って、その中でパッケージを切るけど、公開するのはトップのやつ（handler 的な部分）のみ、って感じかな
+- 埋め込み
+  - 委譲としての継承を実現してる！
+
+``` sh
+# モジュールを指定して run することもできる！
+go run github.com/mattn/longcat@v0.0.4
+```
+
+### メモ
+
+- 移譲と継承について
+  - 委譲ってのは別クラスに切り出してメンバー変数で持つだけ、のものかな
+    - わざわざ名前つけんなや
