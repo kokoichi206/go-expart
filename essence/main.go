@@ -16,6 +16,8 @@ type foo struct{}
 func (f *foo) doSomething() {}
 
 func main() {
+	stoppableGoroutine()
+	return
 	sendMail()
 	firstServer()
 	// stringer コマンドで生成された文字列、Orange が表示される
