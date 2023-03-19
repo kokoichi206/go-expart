@@ -16,6 +16,8 @@ type foo struct{}
 func (f *foo) doSomething() {}
 
 func main() {
+	sendMail()
+	firstServer()
 	// stringer コマンドで生成された文字列、Orange が表示される
 	fmt.Println(Orange)
 	ls()

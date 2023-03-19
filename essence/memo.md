@@ -121,3 +121,15 @@ go run github.com/mattn/longcat@v0.0.4
 - 移譲と継承について
   - 委譲ってのは別クラスに切り出してメンバー変数で持つだけ、のものかな
     - わざわざ名前つけんなや
+
+## sec 5
+
+- routing
+  - func.Handle, func.HandleFunc は引数の違いのみで、キャスト可能
+- Go のメソッド呼び出しは、第一引数にレシーバを持った関数の呼び出しと同義！！
+
+### SMTP
+
+- gmail: smtp.gmail.com
+  - https://support.google.com/a/answer/176600?hl=ja
+- 2 段階認証プロセス > アプリ パスワード
