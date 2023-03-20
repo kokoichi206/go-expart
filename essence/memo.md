@@ -202,3 +202,45 @@ t.Setenv()
 
 - テストは一回限りではなく繰り返し行うことが重要
 - 新しい機能を足した際にテストも足すよ
+
+## sec 8
+
+- 言語標準でテストスイートだけでなくベンチマークも用意してるのは珍しいのでは？
+- 推測するな、計測せよ
+  - Rob Pike (Go の生みの親の1人)
+  - > Bottlenecks occur in surprising places, so don't try to second guess and put in a speed hack until you've proven that's where the bottleneck is.
+
+### benchmark
+
+``` go
+package something
+
+func BenchmarkDoSomething(b *testing.B) {
+    for i := 0; i < b.N; i++ {
+        DoSomething()
+    }
+}
+```
+
+``` sh
+go test -bench DoSomething
+```
+
+### pprof
+
+サーバーの場合
+
+サーバーの場合は "net/http/pprof" をブランクインポートするだけ
+
+``` go
+	// 別のごるーちんで起動
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+```
+
+``` sh
+curl -s http://localhost:6060/debug/pprof/profile > cpu.prof
+# この間にアクセスする！
+go tool pprof -http=:7777 cpu.prof 
+```
