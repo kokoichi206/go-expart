@@ -258,3 +258,21 @@ go tool pprof -http=:7777 cpu.prof
     - rivo/tview
 - CJK統合漢字
   - Chinese, Japanese, Korean
+
+## sec 10
+
+- web フレームワーク
+  - 軽量なものから中規模のものがおい
+  - フレームワークごとに特色がある
+    - ルーティングに重きを置いていたり
+    - パラメータの取得に重きを置いていたり
+  - フレームワークは一度使うと多少なりともロックインされてまう
+    - パフォーマンス、運用面での取り扱いやすさなどを考える必要がある！
+- ベンチマーク
+  - [ddosify/ddosify](https://github.com/ddosify/ddosify)
+  - [rakyll/hey](https://github.com/rakyll/hey)
+
+Go のスタティックバイナリは運用ととても相性がいい！
+Go は他のライブラリを参照していないので、ソフトウェアのバージョンアップが干渉することがない！！
+
+これアツいな
