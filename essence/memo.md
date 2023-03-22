@@ -244,3 +244,17 @@ curl -s http://localhost:6060/debug/pprof/profile > cpu.prof
 # この間にアクセスする！
 go tool pprof -http=:7777 cpu.prof 
 ```
+
+## sec 9
+
+- FTS4: Full Text Search version 4
+- urfave/cli を最もよく使ってるみたい、今は
+- TUI: Text User Interface
+  - 端末の制御
+  - Go は内部エンコーディングが UTF-8 で、異なるプラットフォームに適応させやすい
+  - olekukonko/tablewriter
+  - jroimartin/gocui
+    - gizak/termui
+    - rivo/tview
+- CJK統合漢字
+  - Chinese, Japanese, Korean
