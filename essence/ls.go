@@ -1,3 +1,4 @@
+// Package main is the entry point of this repository
 package main
 
 import (
