@@ -308,3 +308,37 @@ git push --tags
 - ci-cd
   - strategy による各プラットフォームでのテスト
   - go-releaser
+
+## sec 12
+
+- database/sql は RDBMS を抽象的に表現したインタフェースを提供している
+  - → database/sql が提供する driver インタフェースに従って開発された「データベースドライバ」を使う必要がある
+- `stmt`
+  - ステートメント！
+- ORM
+  - ent/ent
+
+## sec 13
+
+Why Go in cloud service
+
+- シングルバイナリでデプロイしやすい
+- クロスコンパイルが容易
+- メニーコア環境でスケールする！
+  - このアピールのために、クラウドサービスの提供者側が SDK を提供することも！
+
+``` Makefile
+all: main.zip
+
+main.zip: main
+  build-lambda-zip -output main.zip main
+
+main: main.go
+  GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -v -ldflags '-d -s -w' -a -tags netgo -installsuffix netgo -o main main.go
+
+update: main.zip
+  aws lambda update-function-code --function-name hello --zip-file fileb://main.zip
+
+clean:
+  rm -f main.zip main
+```
