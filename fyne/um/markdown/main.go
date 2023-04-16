@@ -56,6 +56,8 @@ func (cfg *config) makeUI() (*widget.Entry, *widget.RichText) {
 }
 
 func (cfg *config) createMenuItems(win fyne.Window) {
+	// Q. このコードは何をしてますかね？
+	// A. 
 	openMenuItem := fyne.NewMenuItem("open...", cfg.openFunc(win))
 	saveMenuItem := fyne.NewMenuItem("save", cfg.saveFunc(win))
 
