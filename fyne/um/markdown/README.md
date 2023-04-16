@@ -1,0 +1,3 @@
+- menu items
+- saving and opening files
+- themes
