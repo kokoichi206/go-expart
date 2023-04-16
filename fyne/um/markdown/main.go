@@ -2,11 +2,13 @@ package main
 
 import (
 	"io/ioutil"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -55,7 +57,8 @@ func (cfg *config) makeUI() (*widget.Entry, *widget.RichText) {
 
 func (cfg *config) createMenuItems(win fyne.Window) {
 	openMenuItem := fyne.NewMenuItem("open...", cfg.openFunc(win))
-	saveMenuItem := fyne.NewMenuItem("save", func() {})
+	saveMenuItem := fyne.NewMenuItem("save", cfg.saveFunc(win))
+
 	cfg.SaveMenuItem = saveMenuItem
 	cfg.SaveMenuItem.Disabled = true
 	saveAsMenuItem := fyne.NewMenuItem("save as.", cfg.saveAsFunc(win))
@@ -64,6 +67,25 @@ func (cfg *config) createMenuItems(win fyne.Window) {
 	menu := fyne.NewMainMenu(fileMenu)
 
 	win.SetMainMenu(menu)
+}
+
+var filter = storage.NewExtensionFileFilter([]string{".md", ".MD"})
+
+func (cfg *config) saveFunc(win fyne.Window) func() {
+	return func() {
+		if cfg.CurrentFile != nil {
+			writer, err := storage.Writer(cfg.CurrentFile)
+			if err != nil {
+				dialog.ShowError(err, win)
+
+				return
+			}
+
+			defer writer.Close()
+
+			writer.Write([]byte(cfg.EditWidget.Text))
+		}
+	}
 }
 
 func (cfg *config) openFunc(win fyne.Window) func() {
@@ -96,6 +118,8 @@ func (cfg *config) openFunc(win fyne.Window) func() {
 			cfg.SaveMenuItem.Disabled = false
 		}, win)
 
+		openDialog.SetFilter(filter)
+
 		openDialog.Show()
 	}
 }
@@ -114,6 +138,10 @@ func (cfg *config) saveAsFunc(win fyne.Window) func() {
 				return
 			}
 
+			if !strings.HasSuffix(strings.ToLower(writer.URI().Name()), ".md") {
+				dialog.ShowInformation("Error", "please name your file with extension .md", win)
+			}
+
 			defer writer.Close()
 
 			// save the file
@@ -123,6 +151,9 @@ func (cfg *config) saveAsFunc(win fyne.Window) func() {
 			win.SetTitle(win.Title() + " - " + writer.URI().Name())
 			cfg.SaveMenuItem.Disabled = false
 		}, win)
+
+		saveDialog.SetFileName("untitled.md")
+		saveDialog.SetFilter(filter)
 
 		saveDialog.Show()
 	}
