@@ -9,10 +9,11 @@ import (
 )
 
 type Config struct {
-	App        fyne.App
-	InfoLog    *log.Logger
-	Errorlog   *log.Logger
-	MainWindow fyne.Window
+	App            fyne.App
+	InfoLog        *log.Logger
+	Errorlog       *log.Logger
+	MainWindow     fyne.Window
+	PriceContainer *fyne.Container
 }
 
 var myApp Config
@@ -25,7 +26,7 @@ func main() {
 	myApp.Errorlog = log.New(os.Stdout, "ERROR\t ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	myApp.MainWindow = fyneApp.NewWindow("watcher")
-	myApp.MainWindow.Resize(fyne.NewSize(300, 200))
+	myApp.MainWindow.Resize(fyne.NewSize(779, 420))
 	myApp.MainWindow.SetFixedSize(true)
 	myApp.MainWindow.SetMaster()
 
