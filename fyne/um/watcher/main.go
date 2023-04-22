@@ -2,11 +2,13 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/driver/desktop"
+	"fyne.io/fyne/v2/widget"
 )
 
 type Config struct {
@@ -15,6 +17,8 @@ type Config struct {
 	Errorlog       *log.Logger
 	MainWindow     fyne.Window
 	PriceContainer *fyne.Container
+	ToolBar        *widget.Toolbar
+	HTTPClient     *http.Client
 }
 
 var myApp Config
@@ -22,6 +26,7 @@ var myApp Config
 func main() {
 	fyneApp := app.NewWithID("jp.mydns.kokoichi.watcher.preferences")
 	myApp.App = fyneApp
+	myApp.HTTPClient = &http.Client{}
 
 	myApp.InfoLog = log.New(os.Stdout, "INFO\t ", log.Ldate|log.Ltime)
 	myApp.Errorlog = log.New(os.Stdout, "ERROR\t ", log.Ldate|log.Ltime|log.Lshortfile)

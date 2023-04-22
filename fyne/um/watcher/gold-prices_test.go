@@ -1,20 +1,10 @@
 package main
 
 import (
-	"io"
-	"net/http"
-	"strings"
 	"testing"
 )
 
 func TestGold_GetPrices(t *testing.T) {
-	cl := NewTestClient(func(req *http.Request) *http.Response {
-		return &http.Response{
-			StatusCode: 200,
-			Body:       io.NopCloser(strings.NewReader(jsonToReturn)),
-			Header:     make(http.Header),
-		}
-	})
 	g := Gold{
 		Client: cl,
 		Prices: nil,
