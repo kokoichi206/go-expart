@@ -1,0 +1,28 @@
+package repository
+
+import (
+	"errors"
+	"time"
+)
+
+var (
+	errUpdateFailed = errors.New("update failed")
+	errDeleteFailed = errors.New("delete failed")
+)
+
+type Repository interface {
+	Migrate() error
+
+	InsertHolding(h Holdings) (*Holdings, error)
+	AllHoldings() ([]Holdings, error)
+	GetHoldingByID(id int64) (*Holdings, error)
+	UpdateHolding(id int64, updated Holdings) error
+	DeleteHolding(id int64) error
+}
+
+type Holdings struct {
+	ID            int64     `json:"id"`
+	Amount        int       `json:"amount"`
+	Purchased     time.Time `json:"purchased"`
+	PurchasePrice int       `json:"purchase_price"`
+}
