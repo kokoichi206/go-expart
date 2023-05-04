@@ -19,6 +19,9 @@ BenchmarkReturnPoineter-8               574554602                2.107 ns/op    
 # sample_test.go
 Benchmark_ValueValue-8                  388464440                3.202 ns/op           0 B/op          0 allocs/op
 Benchmark_ValuePointer-8                553840508                2.211 ns/op           0 B/op          0 allocs/op
+# slice_loop_test.go
+Benchmark_SliceValueLoop-8                  4312            249520 ns/op           48015 B/op       1000 allocs/op
+Benchmark_SlicePointerLoop-8                3913            306516 ns/op           48013 B/op       1000 allocs/op
 # slice_test.go
 Benchmark_SliceValue-8                  551618252                2.148 ns/op           0 B/op          0 allocs/op
 Benchmark_SlicePointer-8                583519108                2.093 ns/op           0 B/op          0 allocs/op
