@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -30,8 +29,6 @@ func main() {
 	b := *(*[]byte)(unsafe.Pointer(&s))
 	fmt.Printf("b: %v\n", b)
 	fmt.Printf("b address: %p\n", b)
-	
-	errors.Is(err, )
 
 	return
 
