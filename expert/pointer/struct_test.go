@@ -4,16 +4,6 @@ import (
 	"testing"
 )
 
-//go:noinline
-func sf(v pien) pien {
-	return v
-}
-
-//go:noinline
-func sg(v *pien) *pien {
-	return v
-}
-
 func Benchmark_SingleValue(b *testing.B) {
 	b.ReportAllocs()
 	v := pien{

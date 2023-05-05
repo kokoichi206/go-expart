@@ -4,22 +4,6 @@ import (
 	"testing"
 )
 
-type pien struct {
-	paon   string
-	hoge   string
-	taihen string
-}
-
-//go:noinline
-func f(v []pien) []pien {
-	return v
-}
-
-//go:noinline
-func g(v []*pien) []*pien {
-	return v
-}
-
 func Benchmark_SliceValue(b *testing.B) {
 	b.ReportAllocs()
 	size := 1000
@@ -52,6 +36,6 @@ func Benchmark_SlicePointer(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		g(v)
+		_ = g(v)
 	}
 }
