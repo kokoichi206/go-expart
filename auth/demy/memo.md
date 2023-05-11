@@ -43,6 +43,18 @@ user:pass%
   - https://pkg.go.dev/crypto/hmac
 
 
+## JWT
+
+```
+{JWT standard fields}.{your fields}.Signature
+```
+
+- https://github.com/dgrijalva/jwt-go
+- https://en.wikipedia.org/wiki/Electronic_signature
+
+
+
+
 
 ## Links
 
