@@ -159,3 +159,32 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 
 	return true
 }
+
+func TestReturnStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"return 46;", 46},
+		{"return 10; 46;", 10},
+		{"return 46; 11; return 92;", 46},
+		{"11; return 4 * 6; 92;", 24},
+		{
+			`
+			if (46 > 13) {
+				if (13 > 1) {
+					return 31;
+				}
+
+				erturn 1;
+			}
+			`,
+			31,
+		},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testIntegerObject(t, evaluated, tt.expected)
+	}
+}
