@@ -114,6 +114,7 @@ REPL
 - parseGroupedExpression あたりが、「トークンタイプに関連づけるという考え方」が輝くポイント！
 - 有名なインタプリタのソースコード
   - https://github.com/wren-lang/wren
+- let による変数束縛
 
 ## TODO
 
