@@ -37,7 +37,15 @@ func (l *Lexer) NextToken() token.Token {
 	// 現在検査中の文字 l.ch に応じて、token.Token を生成する。
 	switch l.ch {
 	case '=':
-		tk = newToken(token.ASSIGN, l.ch)
+		if l.peekChar() == '=' {
+			// 2文字のトークンを生成する。
+			ch := l.ch
+			l.readChar()
+			tk.Literal = string(ch) + string(l.ch)
+			tk.Type = token.EQ
+		} else {
+			tk = newToken(token.ASSIGN, l.ch)
+		}
 	case ';':
 		tk = newToken(token.SEMICOLON, l.ch)
 	case '(':
@@ -51,7 +59,15 @@ func (l *Lexer) NextToken() token.Token {
 	case '-':
 		tk = newToken(token.MINUS, l.ch)
 	case '!':
-		tk = newToken(token.BANG, l.ch)
+		if l.peekChar() == '=' {
+			// 2文字のトークンを生成する。
+			ch := l.ch
+			l.readChar()
+			tk.Literal = string(ch) + string(l.ch)
+			tk.Type = token.NOT_EQ
+		} else {
+			tk = newToken(token.BANG, l.ch)
+		}
 	case '/':
 		tk = newToken(token.SLASH, l.ch)
 	case '*':
@@ -132,4 +148,14 @@ func (l *Lexer) readNumber() string {
 	}
 
 	return l.input[position:l.position]
+}
+
+// readChar との違いは Zl.readPosition を進めないこと。
+func (l *Lexer) peekChar() byte {
+	if l.readPosition >= len(l.input) {
+		// ASCII code for "NUL"
+		return 0
+	} else {
+		return l.input[l.readPosition]
+	}
 }
