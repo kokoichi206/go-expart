@@ -404,6 +404,18 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"46 > 3 == true",
 			"((46>3)==true)",
 		},
+		{
+			"1 + (2 + 3) + 4",
+			"((1+(2+3))+4)",
+		},
+		{
+			"(1 + 46) * 2",
+			"((1+46)*2)",
+		},
+		{
+			"-(1 + 46)",
+			"(-(1+46))",
+		},
 	}
 
 	for _, tt := range tests {
