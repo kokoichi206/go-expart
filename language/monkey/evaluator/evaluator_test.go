@@ -32,6 +32,23 @@ func TestEvalIntegerExpression(t *testing.T) {
 	}
 }
 
+func TestEvalStringExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{`"hello"`, "hello"},
+		{`"str test"`, "str test"},
+		{`"5"`, "5"},
+		{`"46"`, "46"},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testStringObject(t, evaluated, tt.expected)
+	}
+}
+
 func TestEvalBooleanExpression(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -56,10 +73,19 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"(46 > 10) == false", false},
 		{"(46 < 10) == true", false},
 		{"(46 < 10) == false", true},
+		{`"hello" == "hello"`, true},
+		{`"hello" == "world"`, false},
+		{`"hello" != "hello"`, false},
+		{`"hello" != "world"`, true},
+		{`"46" == "46"`, true},
+		{`"46" == "10"`, false},
+		{`"46" != "46"`, false},
+		{`"46" != "10"`, true},
 	}
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
+		t.Log(tt.input)
 		testBooleanObject(t, evaluated, tt.expected)
 	}
 }
@@ -100,6 +126,23 @@ func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
 
 	if result.Value != expected {
 		t.Errorf("object has wrong value. Got %t, want %t", result.Value, expected)
+
+		return false
+	}
+
+	return true
+}
+
+func testStringObject(t *testing.T, obj object.Object, expected string) bool {
+	result, ok := obj.(*object.String)
+	if !ok {
+		t.Errorf("obj is not an String. Got %T (%+v)", obj, obj)
+
+		return false
+	}
+
+	if result.Value != expected {
+		t.Errorf("object has wrong value. Got %s, want %s", result.Value, expected)
 
 		return false
 	}
@@ -235,6 +278,10 @@ func TestErrorHandling(t *testing.T) {
 			"foobar",
 			"identifier not found: foobar",
 		},
+		{
+			`"hello" - "world"`,
+			"unknown operator: STRING - STRING",
+		},
 	}
 
 	for _, tt := range tests {
@@ -318,5 +365,22 @@ func TestFunctionApplication(t *testing.T) {
 
 	for _, tt := range tests {
 		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
+}
+
+func TestStringConcatenation(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{`"hello" + "world!"`, "helloworld!"},
+		{`"Hello" + " " + "world!"`, "Hello world!"},
+		{`"str test" + " " + "dayo"`, "str test dayo"},
+		{`"5" + "46`, "546"},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testStringObject(t, evaluated, tt.expected)
 	}
 }
