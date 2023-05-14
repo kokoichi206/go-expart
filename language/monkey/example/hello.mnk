@@ -1,0 +1,25 @@
+let a = 4;
+puts(a)
+
+let double = fn(x) {
+    return 2 * x;
+}
+let x = 23;
+let y = double(x);
+puts("x = " + string(x))
+puts("y = " + string(y))
+
+if (y > 33) {
+    puts("y is greater than 33")
+}
+
+let h = {
+    "name": "kokoichi",
+    "age": 215,
+    "height": 198
+}
+puts(h["name"])
+let key = "not found"
+if (!h[key]) {
+    puts(key + " was not found")
+}
