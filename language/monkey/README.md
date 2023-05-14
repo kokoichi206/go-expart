@@ -2,6 +2,8 @@
 
 ## Usage
 
+### Interactive Mode
+
 ``` sh
 $ go run main.go
 Hello kokoichi! This is the Monkey programming language!
@@ -19,4 +21,18 @@ null
 9
 >> arr[-1]
 null
+```
+
+### File Input
+
+You can find [example files](./example/).
+
+``` sh
+$ go run main.go example/hello.mnk
+4
+x = 23
+y = 46
+y is greater than 33
+kokoichi
+not found was not found
 ```

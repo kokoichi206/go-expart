@@ -4,10 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
 	"monkey-language/evaluator"
 	"monkey-language/lexer"
 	"monkey-language/object"
 	"monkey-language/parser"
+	"os"
+	"path/filepath"
 )
 
 const PROMPT = ">> "
@@ -63,5 +66,37 @@ func printParserErrors(out io.Writer, errors []string) {
 
 	for _, msg := range errors {
 		io.WriteString(out, "\t"+msg+"\n")
+	}
+}
+
+const (
+	fileExtension = ".mnk"
+)
+
+func StartFile(filename string) {
+	out := os.Stdout
+	env := object.NewEnvironment()
+
+	if filepath.Ext(filename) != fileExtension {
+		log.Fatalf("Invalid file extension. Expected %s", fileExtension)
+	}
+
+	b, err := os.ReadFile(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	l := lexer.New(string(b))
+	p := parser.New(l)
+
+	program := p.ParseProgram()
+	if len(p.Errors()) > 0 {
+		printParserErrors(out, p.Errors())
+	}
+
+	evaluated := evaluator.Eval(program, env)
+	if evaluated != nil && evaluated.Type() == object.ERROR_OBJ {
+		io.WriteString(out, evaluated.Inspect())
+		io.WriteString(out, "\n")
 	}
 }
