@@ -28,6 +28,7 @@ if (5 < 10) {
 10 != 46;
 "str test"
 "46"
+[13, 46];
 `
 
 	tests := []struct {
@@ -109,6 +110,12 @@ if (5 < 10) {
 		{token.SEMICOLON, ";"},
 		{token.STRING, "str test"},
 		{token.STRING, "46"},
+		{token.LBRACKET, "["},
+		{token.INT, "13"},
+		{token.COMMA, ","},
+		{token.INT, "46"},
+		{token.RBRACKET, "]"},
+		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
 

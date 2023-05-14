@@ -126,48 +126,6 @@ func (es *ExpressionStatement) TokenLiteral() string {
 	return es.Token.Literal
 }
 
-type IntegerLiteral struct {
-	Token token.Token
-	Value int64
-}
-
-func (il *IntegerLiteral) String() string {
-	return il.Token.Literal
-}
-
-func (il *IntegerLiteral) expressionNode() {}
-func (il *IntegerLiteral) TokenLiteral() string {
-	return il.Token.Literal
-}
-
-type Boolean struct {
-	Token token.Token
-	Value bool
-}
-
-func (b *Boolean) String() string {
-	return b.Token.Literal
-}
-
-func (b *Boolean) expressionNode() {}
-func (b *Boolean) TokenLiteral() string {
-	return b.Token.Literal
-}
-
-type StringLiteral struct {
-	Token token.Token
-	Value string
-}
-
-func (s *StringLiteral) String() string {
-	return s.Token.Literal
-}
-
-func (s *StringLiteral) expressionNode() {}
-func (s *StringLiteral) TokenLiteral() string {
-	return s.Token.Literal
-}
-
 type PrefixExpression struct {
 	Token    token.Token
 	Operator string
