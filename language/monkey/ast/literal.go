@@ -96,3 +96,30 @@ func (ie *IndexExpression) expressionNode() {}
 func (ie *IndexExpression) TokenLiteral() string {
 	return ie.Token.Literal
 }
+
+type HashLiteral struct {
+	Token token.Token
+	// どちらも Expression
+	Pairs map[Expression]Expression
+}
+
+func (h *HashLiteral) String() string {
+	var out bytes.Buffer
+
+	pairs := []string{}
+	for key, value := range h.Pairs {
+		// key と value は Expression なので、String() で文字列に変換できる。
+		pairs = append(pairs, key.String()+":"+value.String())
+	}
+
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
+
+	return out.String()
+}
+
+func (h *HashLiteral) expressionNode() {}
+func (h *HashLiteral) TokenLiteral() string {
+	return h.Token.Literal
+}
