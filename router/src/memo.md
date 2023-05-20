@@ -4,6 +4,20 @@
 sudo ip netns exec host1 ping -c 2 192.168.0.2
 ```
 
+- Ethernet
+  - LAN に接続された PC 間で通信するためのもの
+- ARP
+  - Ethernet から IP パケットを送信する場合、送信先の IP アドレスが持つ Mac アドレス必要
+  - それを知るための仕組みが ARP
+    - OS が対応表を保持
+    - arp コマンド
+
+``` sh
+make
+
+sudo ip netns exec host1 arping -I host1-router1 192.168.1.1
+```
+
 ## error
 
 ### interrupted system call
