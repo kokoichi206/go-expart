@@ -82,19 +82,29 @@ func runChap(mode string) {
 		// これが必要
 		// ないと『interrupted system call』が発生した
 		syscall.SetNonblock(sock, false)
-		netDeviceList = append(netDeviceList, &netDevice{
+
+		netAddr, err := netif.Addrs()
+		if err != nil {
+			log.Fatalf("failed to get addr from NIC interface: %s", err)
+		}
+
+		netDev := &netDevice{
 			name:       netif.Name,
 			macaddr:    setMacAddr(netif.HardwareAddr),
 			socket:     sock,
 			socketaddr: addr,
-		})
+			ipdev:      getIPdevice(netAddr),
+		}
+
+		netDeviceList = append(netDeviceList, netDev)
 	}
 
 	for {
 		// パケットの受信を待つ！
 		nfds, err := syscall.EpollWait(epfd, events, -1)
 		if err != nil {
-			log.Fatalf("failed to epoll wait: %s", err)
+			// log.Fatalf("failed to epoll wait: %s", err)
+			fmt.Printf("failed to epoll wait: %s\n", err)
 		}
 
 		for i := 0; i < nfds; i++ {
@@ -102,13 +112,26 @@ func runChap(mode string) {
 				// イベントがあったソケットとマッチしたら、
 				// パケットを読み込む処理を実行！
 				if events[i].Fd == int32(netdev.socket) {
-					if err := netdev.netDevicePoll("ch1"); err != nil {
+					if err := netdev.netDevicePoll(mode); err != nil {
 						log.Fatal(err)
 					}
 				}
 			}
 		}
 	}
+}
+
+const (
+	connected ipRouteType = iota
+	network
+)
+
+type ipRouteType uint8
+
+type ipRouteEntry struct {
+	iptype  ipRouteType
+	netdev  *netDevice
+	nexthop uint32
 }
 
 var IGNORE_INTERFACES = []string{"lo", "bond0", "dummy0", "tunl0", "sit0"}
@@ -304,6 +327,9 @@ https://github.com/kametan0730/interface_2022_11/blob/master/chapter2/arp.cpp#L1
 */
 func arpRequestArrives(netdev *netDevice, arp arpIPToEthernet) {
 	// IPアドレスが設定されているデバイスからの受信かつ要求されているアドレスが自分の物だったら
+	fmt.Println("arpRequestArrives...")
+	fmt.Printf("(netdev.ipdev.address != 00000000): %v\n", (netdev.ipdev.address != 00000000))
+	fmt.Printf("(netdev.ipdev.address == arp.targetIPAddr): %v\n", (netdev.ipdev.address == arp.targetIPAddr))
 	if netdev.ipdev.address != 00000000 && netdev.ipdev.address == arp.targetIPAddr {
 		fmt.Printf("Sending arp reply to %s\n", printIPAddr(arp.targetIPAddr))
 		// APRリプライのパケットを作成
@@ -349,6 +375,7 @@ func ethernetOutput(netdev *netDevice, destaddr [6]uint8, packet []byte, ethType
 
 // NW インタフェースに bind したソケットに sendto でパケットが送信される。
 func (netdev netDevice) netDeviceTransmit(data []byte) error {
+	fmt.Println("netDeviceTransmiting...")
 	err := syscall.Sendto(netdev.socket, data, 0, &netdev.socketaddr)
 	if err != nil {
 		return fmt.Errorf("failed to execute syscall sendTo: %w", err)
@@ -784,4 +811,19 @@ func sendArpRequest(netdev *netDevice, targetip uint32) {
 	}.ToPacket()
 	// ethernetでカプセル化して, FF-FF-FF-FF-FF-FF を送信する。
 	ethernetOutput(netdev, ETHERNET_ADDRESS_BROADCAST, arpPacket, ETHER_TYPE_ARP)
+}
+
+func getIPdevice(addrs []net.Addr) (ipdev ipDevice) {
+	for _, addr := range addrs {
+		// ipv6ではなくipv4アドレスをリターン
+		ipaddrstr := addr.String()
+		if !strings.Contains(ipaddrstr, ":") && strings.Contains(ipaddrstr, ".") {
+			ip, ipnet, _ := net.ParseCIDR(ipaddrstr)
+			ipdev.address = byteToUint32(ip.To4())
+			ipdev.netmask = byteToUint32(ipnet.Mask)
+			// ブロードキャストアドレスの計算はIPアドレスとサブネットマスクのbit反転の2進数「OR（論理和）」演算
+			ipdev.broadcast = ipdev.address | (^ipdev.netmask)
+		}
+	}
+	return ipdev
 }

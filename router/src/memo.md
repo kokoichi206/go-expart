@@ -11,6 +11,11 @@ sudo ip netns exec host1 ping -c 2 192.168.0.2
   - それを知るための仕組みが ARP
     - OS が対応表を保持
     - arp コマンド
+- ICMP
+  - ping 発行時、以下の順でパケットが取り出される
+    - Ethernet で受信
+    - IP で受信
+    - ICMP で受信
 
 ``` sh
 make
