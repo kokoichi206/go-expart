@@ -14,9 +14,31 @@ import (
 // 	}
 // }
 
+type IncomparableStruct struct {
+	SomeFields int
+
+	_ [0]struct{ _ []byte }
+}
+
+type Tea struct {
+	Name string
+}
+
 // recover() の練習
 // recover() は panic() で発生したエラーをキャッチする
 func recoverPractice() {
+	runtime.GC()
+
+	// a := IncomparableStruct{
+	// 	SomeFields: 3,
+	// }
+	// b := IncomparableStruct{}
+	// if a == b {
+	// }
+	// aa := Tea {}
+	// bb := Tea {}
+	// if aa == bb {
+	// }
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Println("recover")
@@ -29,6 +51,8 @@ func recoverPractice() {
 }
 
 func main() {
+	envTest()
+	return
 	// recoverPractice()
 	// return
 
@@ -97,7 +121,7 @@ func main() {
 	// 1. http.HandleFunc() で goroutine が 1 つ増える
 	// 2. server.Serve() で goroutine が 1 つ増える
 	// 3. net.Listen() で goroutine が 1 つ増える
-	// 4. この main() 関数の goroutine が 1 つ増える	
+	// 4. この main() 関数の goroutine が 1 つ増える
 	// 5. 以上の合計で 4 つ増える
 	if err := server.Serve(ln); err != nil {
 		panic(err)
