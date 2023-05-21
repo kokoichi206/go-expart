@@ -113,3 +113,5 @@ traceroute to 192.168.0.2 (192.168.0.2), 64 hops max
   - https://zenn.dev/hsaki/books/golang-io-package/viewer/intro
 - socket の man ページ
   - https://linuxjm.osdn.jp/html/LDP_man-pages/man2/socket.2.html
+- ICMP Type/Code
+  - https://www.infraexpert.com/info/5.0adsl.htm
