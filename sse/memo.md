@@ -2,7 +2,9 @@
 
 onerror のコールバックが呼ばれる、その時の Event 情報は以下　
 
-![](imgs/server_error.png)
+![](imgs/server_error_event.png)
+
+また、この時開発者ツールでの Status は 200 ではなく failed になっている。
 
 ### [mdm: error event](https://developer.mozilla.org/ja/docs/Web/API/EventSource/error_event)
 
