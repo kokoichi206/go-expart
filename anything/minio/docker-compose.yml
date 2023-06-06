@@ -36,6 +36,9 @@ services:
         # ----- object の作成 ----;
         /usr/bin/mc cp /testdata/test.txt myminio/mybucket/myobject;
 
+        /usr/bin/mc mb myminio/minio-compatibility-test;
+        /usr/bin/mc cp /minio-compatibility-test/92074.jpg myminio/mybucket/92074.jpg;
+
         /usr/bin/mc ls myminio;
         exit 0;
       "

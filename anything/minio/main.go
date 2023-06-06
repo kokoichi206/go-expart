@@ -17,12 +17,15 @@ import (
 func main() {
 	// debug.Stack()
 
-	env := env()
-	fmt.Printf("env: %v\n", env)
+	// env := env()
+	// fmt.Printf("env: %v\n", env)
 
 	// useMinioSDK(env)
 
-	useAWSSDK(env)
+	// useAWSSDK(env)
+
+	// s3native()
+	minioCompatibility()
 }
 
 func useMinioSDK(env Env) {
