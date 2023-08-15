@@ -1,0 +1,1 @@
+- [But boring can be good](https://go.dev/blog/compat)
