@@ -44,6 +44,25 @@ func (n *Node[T]) Add(next *Node[T]) {
 	n.next = next
 }
 
+type Foo struct{}
+
+func (f *Foo) Bar() string {
+	return "bar"
+}
+
+func Paon(f *Foo) string {
+	return "paon"
+}
+
+func (f *Foo) Error() string {
+	return "error"
+}
+
+func validate() error {
+	var f *Foo
+	return f
+}
+
 func main() {
 	strs := []string{"c", "a", "b"}
 	sort.Slice(strs, func(i, j int) bool {
@@ -65,4 +84,14 @@ func main() {
 	// keys := getKeys[string](m) と同じ
 	keys := getKeys(m)
 	_ = keys
+
+	var foo *Foo
+	// メソッドは第一引数をレシーバとする関数のシンタックスシュガーにすぎない？
+	fmt.Println(foo.Bar())
+	// メソッド式？
+	// fmt.Println(Foo.Paon)
+	if err := validate(); err != nil {
+		// nil ポインタもエラーになる。
+		fmt.Println(err)
+	}
 }
