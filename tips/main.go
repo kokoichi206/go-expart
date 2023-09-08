@@ -1,9 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"io"
+	"runtime"
 	"sort"
 	"strconv"
+	"sync"
+	"sync/atomic"
 )
 
 func getKeys[C comparable, V any](m map[C]V) []C {
@@ -63,6 +68,53 @@ func validate() error {
 	return f
 }
 
+func deferError() (err error) {
+	defer func() {
+		closeErr := fmt.Errorf("close error")
+		fmt.Printf("err: %v\n", err)
+		err = errors.Join(err, closeErr)
+	}()
+
+	return fmt.Errorf("return error")
+}
+
+// ワーカープールパターン。
+// 送信
+// 	for {
+// 	b := make([]byte, 1024)
+// 		// r から b へ読み込む！
+// 		// 読み込むごとにチャネルに新たなタスクを発行する。
+// 		ch <- b
+// 	}
+func read(r io.Reader) (int, error) {
+	task := func(b []byte) int {
+		return len(b)
+	}
+
+	var count int64
+	wg := sync.WaitGroup{}
+	// ゴルーチンプール。
+	n := 10
+
+	// プールと同じ容量のチャネルを作る。
+	ch := make(chan []byte, n)
+	wg.Add(n)
+	for i := 0; i < n; i++ {
+		go func() {
+			defer wg.Done()
+			// 共有チャネルからタスクを受信する！
+			for b := range ch {
+				v := task(b)
+				atomic.AddInt64(&count, int64(v))
+			}
+		}()
+	}
+
+	close(ch)
+	wg.Wait()
+	return int(count), nil
+}
+
 func main() {
 	strs := []string{"c", "a", "b"}
 	sort.Slice(strs, func(i, j int) bool {
@@ -94,4 +146,12 @@ func main() {
 		// nil ポインタもエラーになる。
 		fmt.Println(err)
 	}
+
+	fmt.Printf("deferError(): %v\n", deferError())
+	fmt.Printf("hooooop ----- \n%s\n", deferError())
+
+	// GOMAXPROCS の値を更新する。
+	// 0 だと現在の値を返す。
+	numGOMAXPROCS := runtime.GOMAXPROCS(0)
+	fmt.Printf("numGOMAXPROCS: %v\n", numGOMAXPROCS)
 }
