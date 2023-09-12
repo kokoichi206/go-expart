@@ -1,0 +1,116 @@
+openapi: "3.0.3"
+info:
+  title: "API spec test"
+  description: |-
+    Wow, wow
+  version: "1.0.0"
+
+tags:
+  - name: User
+    description: Access to user model.
+paths:
+  /users/{id}:
+    get:
+      tags:
+        - "User"
+      summary: GetUsers
+      description: |-
+        Search for a users and get a list.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: User id.
+          schema:
+            type: string
+            format: uuid4
+          example: cfe43609-4c38-d52d-44ff-66bf2bc2d5c2
+        - in: query
+          name: name
+          description: User name.
+          schema:
+            type: string
+          example: John Smith
+      responses:
+        '200':
+          $ref: '#/components/responses/GetUsersResponse'
+
+components:
+  schemas:
+    User:
+      description: User component
+      required:
+        - id
+        - name
+        - email
+      type: object
+      properties:
+        id:
+          title: バックエンドで生成される UUID。
+          type: string
+          example: 2c6e239a-f02b-d158-2833-c7f883bb5530
+          readOnly: true
+        name:
+          title: 名前。
+          type: string
+          example: Leanne Graham
+        email:
+          title: メールアドレス。
+          type: string
+          example: piyo.piyo@example.com
+        hobbies:
+          title: 趣味
+          type: array
+          items:
+            type: string
+            enum: 
+              - 音楽を聴くこと
+              - ゲーム
+              - プログラミング
+              - 旅行
+              - 映画鑑賞
+              - カフェ巡り
+              - デザイン
+              - ファッション
+              - ダンス
+              - バスケットボール
+              - バレーボール
+              - テニス
+            example:
+              - 音楽を聴くこと
+              - ゲーム
+  parameters:
+    UserIdParameter:
+      name: id
+      in: path
+      description: User id.
+      required: true
+      schema:
+        type: string
+        format: uuid4
+      example: cfe43609-4c38-d52d-44ff-66bf2bc2d5c2
+    VersionParameter:
+      name: version
+      in: query
+      description: Optimistic lock key.
+      required: true
+      schema:
+        type: integer
+        default: 1
+      example: 1
+
+  responses:
+    GetUsersResponse:
+      description: User lists
+      content:
+        application/json:
+          schema:
+            allOf:
+            - required:
+              - users
+            - type: object
+            - properties:
+                users:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/User'
