@@ -7,7 +7,7 @@ import (
 )
 
 type maskedValue struct {
-	value string
+	Value string
 	mask  bool
 }
 
@@ -15,33 +15,39 @@ func (v maskedValue) String() string {
 	if v.mask {
 		return "*"
 	}
-	return v.value
+	return v.Value
 }
 
 type maskedConfig struct {
-	key   string
-	value maskedValue
+	Key   string
+	Value maskedValue
 }
 
 type config struct {
-	key   string
-	value string
+	Key   string
+	Value string
 	mask  bool
 }
 
-func (c *config) MarshalJSON() ([]byte, error) {
+func (c config) MarshalJSON() ([]byte, error) {
+	value := c.Value
 	if c.mask {
-		for i := 0; i < len(c.value); i++ {
-			c.value = "*"
+		for i := 0; i < len(c.Value); i++ {
+			value = "*"
 		}
 	}
-	return json.Marshal(c)
+	// Q. なぜかここで panic が起きる。
+	// A. 再帰的に MarshalJSON() が呼ばれるため。
+	return json.Marshal(map[string]interface{}{
+		"key":   c.Key,
+		"value": value,
+	})
 }
 
 func maskTest() {
 	c := &config{
-		key:   "foo",
-		value: "bar",
+		Key:   "foo",
+		Value: "bar",
 		mask:  true,
 	}
 	b, err := json.Marshal(c)
@@ -51,9 +57,9 @@ func maskTest() {
 	println(string(b))
 
 	c2 := maskedConfig{
-		key: "foo",
-		value: maskedValue{
-			value: "bar",
+		Key: "foo",
+		Value: maskedValue{
+			Value: "bar",
 			mask:  true,
 		},
 	}
