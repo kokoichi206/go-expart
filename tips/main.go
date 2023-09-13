@@ -80,12 +80,13 @@ func deferError() (err error) {
 
 // ワーカープールパターン。
 // 送信
-// 	for {
-// 	b := make([]byte, 1024)
-// 		// r から b へ読み込む！
-// 		// 読み込むごとにチャネルに新たなタスクを発行する。
-// 		ch <- b
-// 	}
+//
+//	for {
+//	b := make([]byte, 1024)
+//		// r から b へ読み込む！
+//		// 読み込むごとにチャネルに新たなタスクを発行する。
+//		ch <- b
+//	}
 func read(r io.Reader) (int, error) {
 	task := func(b []byte) int {
 		return len(b)
@@ -116,6 +117,10 @@ func read(r io.Reader) (int, error) {
 }
 
 func main() {
+	maskTest()
+
+	jsonTest()
+
 	strs := []string{"c", "a", "b"}
 	sort.Slice(strs, func(i, j int) bool {
 		return strs[i] < strs[j]
