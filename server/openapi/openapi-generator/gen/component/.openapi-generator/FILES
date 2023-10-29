@@ -1,0 +1,10 @@
+.gitignore
+api/openapi.yaml
+docs/Pet.md
+docs/PetAPI.md
+docs/PetStatus.md
+model_pet.go
+model_pet_status.go
+response.go
+test/api_pet_test.go
+utils.go
