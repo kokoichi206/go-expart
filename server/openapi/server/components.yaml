@@ -1,0 +1,40 @@
+openapi: 3.0.0
+paths: {}
+info:
+  title: Pet store schema
+  version: 1.0.0
+components:
+  schemas:
+    ListCommentsResponse:
+      description: list comments
+      properties:
+        result:
+          items:
+            $ref: '#/components/schemas/Comment'
+          type: array
+        total:
+          type: integer
+      required:
+      - result
+      - total
+    Comment:
+      description: comment
+      properties:
+        comment1:
+          type: string
+        date:
+          type: string
+        kijicode:
+          type: string
+        body:
+          type: string
+        highlight:
+          items:
+            type: string
+          type: array
+      required:
+      - comment1
+      - date
+      - kijicode
+      - body
+      - highlight
