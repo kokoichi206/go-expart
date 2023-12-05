@@ -54,7 +54,11 @@
   - NG: ABC
   - の時に ABCD もはじいちゃう問題
 
+## 単体テスト
 
+- assert.ElementMatch
+  - 要素の順序が異なっていても、要素が等しければ判定は true になる
+    - map, slice
 
 ## Links
 
