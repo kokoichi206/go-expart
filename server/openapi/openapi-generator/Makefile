@@ -35,3 +35,11 @@ clear710:
 .PHONY: bench
 bench:
 	go test -bench .
+
+.PHONY: components
+components:
+	docker run --rm -v $(current_dir):/project openapitools/openapi-generator-cli:v7.1.0 \
+		generate -i /project/components.yaml -g go \
+		--additional-properties generateMarshalJSON=false \
+		--additional-properties disallowAdditionalPropertiesIfNotPresent=true \
+		--additional-properties packageName=components_test -o /project/components_test -p enumClassPrefix=true
