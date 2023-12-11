@@ -3,6 +3,7 @@ package main
 import (
 	"benchmark/gen/component"
 	"benchmark/gen/component_710"
+	"benchmark/gen/component_710_un"
 	"benchmark/gen/component_method"
 	"encoding/json"
 	"os"
@@ -40,6 +41,16 @@ func BenchmarkJsonUnMarshal710(b *testing.B) {
 	}
 }
 
+func BenchmarkJsonUnMarshal710Un(b *testing.B) {
+	bytes, _ := os.ReadFile("res.json")
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		var res component_710_un.Pet
+		json.Unmarshal(bytes, &res)
+	}
+}
+
 // ==================== Marshal ====================
 func BenchmarkJsonMarshal(b *testing.B) {
 	bytes, _ := os.ReadFile("res.json")
@@ -66,6 +77,17 @@ func BenchmarkJsonMarshalMethod(b *testing.B) {
 func BenchmarkJsonMarshal710(b *testing.B) {
 	bytes, _ := os.ReadFile("res.json")
 	var res component_710.Pet
+	json.Unmarshal(bytes, &res)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = json.Marshal(res)
+	}
+}
+
+func BenchmarkJsonMarshal710Un(b *testing.B) {
+	bytes, _ := os.ReadFile("res.json")
+	var res component_710_un.Pet
 	json.Unmarshal(bytes, &res)
 
 	b.ResetTimer()
