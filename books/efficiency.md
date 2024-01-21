@@ -29,6 +29,23 @@
 - tips?
   - `// BUG(who)`
 
+## sec 3
+
+DEFINE RAER: **Resource-Aware Efficiency Requirements**
+
+- optimizing our software was not easy.
+  - We are really bad at guessing which part of the program consumes the most resources and how much.
+  - Paret Principle
+- Understand Your Goals
+  - But what does "enough" mean for us?
+  - sweet spot
+- I would encourage you to try defining a number
+  - it would make your software much easier to assess!
+- Efficiency-aware development flow
+  - TFBO:
+    - **test, fix, benchmark, optimize**
+  - It is far, far **easier to make a correct program fast** than it is to make a fast program correct.
+
 ## english
 
 - compromises
@@ -36,3 +53,12 @@
 - Don't get me wrong
 - mitigate
   - 和らげる
+- tame
+  - 飼い慣らす
+- deliberately
+  - わざと
+- with a grain of salt
+  - 話半分に
+- First of all, don't panic!
+- at first hand
+  - 一次資料から、直接に
