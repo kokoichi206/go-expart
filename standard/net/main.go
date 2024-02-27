@@ -94,23 +94,90 @@ func addSseHeadersMW(next http.Handler) http.Handler {
 
 func standard() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /hi", hi)
-	// 全角が入っていると 404 になる。
-	mux.HandleFunc("GET　/pien", hi)
-	mux.HandleFunc("GET /ぴえん/{name}", pien)
-	mux.Handle("/stream", addSseHeadersMW(http.HandlerFunc(stream)))
-	mux.Handle("/json", addSseHeadersMW(http.HandlerFunc(jsonRes)))
 
-	server := &http.Server{
-		Addr:    ":8192",
-		Handler: mux,
+	// ミドルウェア。一番外側に当てたいものから追加する。
+	baseMWs := []func(http.Handler) http.Handler{}
+	baseMWs = append(baseMWs, recovery)
+	baseMWs = append(baseMWs, logging)
+
+	m := &maxMux{
+		mux: mux,
+		mws: baseMWs,
 	}
 
-	// go currentGoroutine()
-	dir, _ := os.Getwd()
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(dir+"/static/")))) //追記
+	m.handle(http.MethodGet, "/recovery", failed)
+	m.handle(http.MethodGet, "/hi", hi)
+	// // 全角が入っていると 404 になる。
+	// m.handle(http.MethodGet, "GET　/pien", hi)
+	m.handle(http.MethodGet, "/ぴえん/{name}", pien)
+	m.handle(http.MethodGet, "/json", jsonRes)
 
+	// 以降のメソッドは、SSE 用のヘッダを mw で付与する。
+	m.mws = append(m.mws, addSseHeadersMW)
+	m.handle(http.MethodGet, "/stream", stream)
+
+	dir, _ := os.Getwd()
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(dir+"/static/"))))
+
+	m.run("8192")
+}
+
+type maxMux struct {
+	mux      *http.ServeMux
+	mws      []func(http.Handler) http.Handler
+	patterns []string
+}
+
+func (m *maxMux) handle(method string, path string, fn func(w http.ResponseWriter, r *http.Request)) {
+	handler := http.Handler(http.HandlerFunc(fn))
+
+	// ミドルウェアを逆順に適用する。
+	for idx := range m.mws {
+
+		mw := m.mws[len(m.mws)-1-idx]
+		handler = mw(handler)
+	}
+
+	pattern := fmt.Sprintf("%s %s", method, path)
+	m.mux.Handle(pattern, handler)
+
+	m.patterns = append(m.patterns, pattern)
+}
+
+func (m *maxMux) run(port string) {
+	server := &http.Server{
+		Addr:    fmt.Sprintf(":%s", port),
+		Handler: m.mux,
+	}
+
+	fmt.Printf("server listening on :%s\n", port)
+	for _, p := range m.patterns {
+		fmt.Printf("pattern: %v\n", p)
+	}
 	server.ListenAndServe()
+}
+
+func failed(w http.ResponseWriter, r *http.Request) {
+	panic("failed")
+}
+
+func recovery(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				fmt.Printf("panic recovered: (message = %s)\n", err)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
+func logging(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("logging: {path: %v}\n", r.URL.Path)
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func hi(w http.ResponseWriter, r *http.Request) {
