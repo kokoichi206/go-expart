@@ -36,3 +36,5 @@ mutation {
   }
 }
 ```
+
+`gqlgen generate` では `gqlgen init` とは違い server.go は生成されない。
