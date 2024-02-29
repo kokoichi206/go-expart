@@ -11,6 +11,25 @@ model:
   filename: graph/model/models_gen.go
   package: model
 
+models:
+  ID:
+    model:
+     - github.com/99designs/gqlgen/graphql.ID
+     - github.com/99designs/gqlgen/graphql.Int
+     - github.com/99designs/gqlgen/graphql.Int64
+     - github.com/99designs/gqlgen/graphql.Int32
+  Int:
+    model:
+     - github.com/99designs/gqlgen/graphql.Int
+     - github.com/99designs/gqlgen/graphql.Int64
+     - github.com/99designs/gqlgen/graphql.Int32s
+  DateTime:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
+  URI:
+    model:
+      - graphql-github-sample/graph/model.MyURL
+
 # リゾルバコードの置き場所
 resolver:
   layout: follow-schema

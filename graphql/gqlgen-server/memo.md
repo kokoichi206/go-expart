@@ -38,3 +38,20 @@ mutation {
 ```
 
 `gqlgen generate` では `gqlgen init` とは違い server.go は生成されない。
+
+``` sh
+gqlgen generate
+
+sqlboiler sqlite3
+```
+
+## query
+
+- GraphQL で取得するフィールドはすべてスカラ型になってる必要がある
+- 独自型
+  - DateTime
+
+
+```
+  ): User @isAuthenticated
+```

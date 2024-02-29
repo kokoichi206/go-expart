@@ -36,3 +36,8 @@ mutation {
   }
 }
 ```
+
+## Links
+
+- こちらの本で勉強させてもらってます、ありがとうございます
+  - https://zenn.dev/hsaki/books/golang-graphql/viewer/resolveradvanced
