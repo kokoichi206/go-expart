@@ -63,6 +63,8 @@ sqlboiler sqlite3
   - 仕組み
     - 検索条件の後すぐにクエリを投げるのではなく、一旦待機する
     - 複数個の条件がたまってから, IN 句で投げる！
+- github.com/99designs/gqlgen/graphql/handler/extension
+  - https://pkg.go.dev/github.com/99designs/gqlgen/graphql/handler/extension
 
 ```
   ): User @isAuthenticated

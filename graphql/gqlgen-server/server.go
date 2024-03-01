@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"graphql-github-sample/graph"
@@ -10,7 +11,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/playground"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -45,6 +48,16 @@ func main() {
 			},
 		),
 	)
+
+	// Middleware
+	srv.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
+		fmt.Println("before operation")
+		res := next(ctx)
+		fmt.Println("after operation")
+		return res
+	})
+
+	srv.Use(extension.FixedComplexityLimit(10))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
