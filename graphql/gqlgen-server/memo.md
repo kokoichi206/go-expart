@@ -56,7 +56,18 @@ sqlboiler sqlite3
     - その情報はクエリ時に使える！
   - オーバーフェッチを防ぐ
   - 発行されるSQLクエリを簡潔に保つ
+- N + 1 問題
+  - Dataloader
+    - N 個のクエリを IN 句で1個にまとめる！！
+    - https://github.com/graph-gophers/dataloader
+  - 仕組み
+    - 検索条件の後すぐにクエリを投げるのではなく、一旦待機する
+    - 複数個の条件がたまってから, IN 句で投げる！
 
 ```
   ): User @isAuthenticated
+```
+
+``` sh
+go get -u github.com/graph-gophers/dataloader/v7
 ```

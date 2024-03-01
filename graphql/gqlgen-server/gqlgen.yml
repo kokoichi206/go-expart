@@ -45,6 +45,14 @@ models:
     fields:
       owner:
         resolver: true
+  Issue:
+    fields:
+      repository:
+        resolver: true
+      projectItems:
+        resolver: true
+      author:
+        resolver: true
 
 # リゾルバコードの置き場所
 resolver:

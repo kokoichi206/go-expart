@@ -9,4 +9,5 @@ import "graphql-github-sample/graph/services"
 // DI のための Resolver 構造体。
 type Resolver struct {
 	Srv services.Services
+	*Loaders
 }

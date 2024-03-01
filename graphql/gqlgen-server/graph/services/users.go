@@ -44,3 +44,26 @@ func (u *userService) GetUserByName(ctx context.Context, name string) (*model.Us
 		Name: user.Name,
 	}, nil
 }
+
+func (u *userService) ListUsersByID(ctx context.Context, IDs []string) ([]*model.User, error) {
+	// sqlboiler で in ってこうやって書くんだ！
+	users, err := db.Users(
+		qm.Select(db.UserTableColumns.ID, db.UserTableColumns.Name),
+		db.UserWhere.ID.IN(IDs),
+	).All(ctx, u.exec)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var res []*model.User
+
+	for _, user := range users {
+		res = append(res, &model.User{
+			ID:   user.ID,
+			Name: user.Name,
+		})
+	}
+
+	return res, nil
+}
