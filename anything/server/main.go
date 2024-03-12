@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -26,26 +27,42 @@ func main() {
 		}
 
 		go func() {
+			defer conn.Close()
 			fmt.Printf("Accept %v\n", conn.RemoteAddr())
-			req, err := http.ReadRequest(bufio.NewReader(conn))
-			if err != nil {
-				log.Fatalf("Failed to read request: %v", err)
-			}
 
-			dump, err := httputil.DumpRequest(req, true)
-			if err != nil {
-				log.Fatalf("Failed to dump request: %v", err)
-			}
-			fmt.Println(string(dump))
+			for {
+				conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 
-			res := http.Response{
-				StatusCode: 200,
-				ProtoMajor: 1,
-				ProtoMinor: 0,
-				Body:       io.NopCloser(strings.NewReader("Hello, World!\n")),
+				req, err := http.ReadRequest(bufio.NewReader(conn))
+				if err != nil {
+					neterr, ok := err.(net.Error)
+					if ok && neterr.Timeout() {
+						fmt.Println("Timeout")
+						break
+					} else if err == io.EOF {
+						fmt.Println("EOF")
+						break
+					}
+					log.Fatalf("Failed to read request: %v", err)
+				}
+
+				dump, err := httputil.DumpRequest(req, true)
+				if err != nil {
+					log.Fatalf("Failed to dump request: %v", err)
+				}
+				fmt.Println(string(dump))
+
+				body := "Hello, World!\n"
+
+				res := http.Response{
+					StatusCode:    200,
+					ProtoMajor:    1,
+					ProtoMinor:    1,
+					ContentLength: int64(len(body)),
+					Body:          io.NopCloser(strings.NewReader(body)),
+				}
+				res.Write(conn)
 			}
-			res.Write(conn)
-			conn.Close()
 		}()
 	}
 }
