@@ -35,6 +35,28 @@ Event-Driven Architecture in Golang
     - event broker
   - Agility
 
+## Patterns
+
+- Domain-driven design (DDD)
+  - about modeling a complex business idea
+  - key components?
+    - ubizuitous language
+    - bounded contexts
+      - Every bounded context has its own UL
+- Domain-centric architectures
+  - [The Onion Architecture](https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/)
+  - [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+  - Hexagonal architecture
+  - you might skip using them
+    - if you keep your **services small** enough or **never have to deal with** migrating cloud providers or switching databases.
+- CQRS:
+  - Command and Query Responsibility Segregation
+    - Command
+      - Performs a mutation of the application state
+    - Query
+      - Returns application state to the caller
+  - [CQRS Documents by Greg Young](https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf)
+
 ## English
 
 - Errata
@@ -52,10 +74,15 @@ Event-Driven Architecture in Golang
   - 発射ボタンを押しさせえすれば、後は忘れていても標的に当たる
 - Choreography
   - 振り付け
+- interventions
+  - 介入介入
+- go south
+  - 悪化する
 
 sentences
 
 - Our world is made up of events
+- architectures can go south if they are followed rigidly
 
 ## Links
 
