@@ -57,6 +57,15 @@ Event-Driven Architecture in Golang
       - Returns application state to the caller
   - [CQRS Documents by Greg Young](https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf)
 
+## Designs
+
+- [EventStorming](https://blog.kinto-technologies.com/posts/2022-11-01-eventstorming/)
+  - システムの目的、前提、すでに決まっている事項
+- BDD: Behavior-Driven Development
+- ADR: 
+  - examples:
+    - https://github.com/PacktPublishing/Event-Driven-Architecture-in-Golang/blob/main/Chapter03/docs/ADL/0002-use-a-modular-monolith-architecture.md
+
 ## English
 
 - Errata
