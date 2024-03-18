@@ -1,0 +1,64 @@
+execve("/usr/bin/rm", ["rm", "myfile.txt"], 0xffffdc1d9e88 /* 51 vars */) = 0
+brk(NULL)                               = 0xaaaae68a4000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff93867000
+faccessat(AT_FDCWD, "/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/ubuntu/catkin_ws/devel/lib/tls/aarch64/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/ubuntu/catkin_ws/devel/lib/tls/aarch64", 0xffffeafc71b0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/ubuntu/catkin_ws/devel/lib/tls/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/ubuntu/catkin_ws/devel/lib/tls", 0xffffeafc71b0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/ubuntu/catkin_ws/devel/lib/aarch64/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/ubuntu/catkin_ws/devel/lib/aarch64", 0xffffeafc71b0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/home/ubuntu/catkin_ws/devel/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/ubuntu/catkin_ws/devel/lib", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+openat(AT_FDCWD, "/opt/ros/noetic/lib/tls/aarch64/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/opt/ros/noetic/lib/tls/aarch64", 0xffffeafc71b0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/opt/ros/noetic/lib/tls/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/opt/ros/noetic/lib/tls", 0xffffeafc71b0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/opt/ros/noetic/lib/aarch64/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/opt/ros/noetic/lib/aarch64", 0xffffeafc71b0, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/opt/ros/noetic/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/opt/ros/noetic/lib", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=85799, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 85799, PROT_READ, MAP_PRIVATE, 3, 0) = 0xffff9381c000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\340u\2\0\0\0\0\0"..., 832) = 832
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=1641496, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 1810024, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff93662000
+mmap(0xffff93670000, 1744488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xffff93670000
+munmap(0xffff93662000, 57344)           = 0
+munmap(0xffff9381a000, 7784)            = 0
+mprotect(0xffff937f9000, 61440, PROT_NONE) = 0
+mmap(0xffff93808000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x188000) = 0xffff93808000
+mmap(0xffff9380e000, 48744, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xffff9380e000
+close(3)                                = 0
+set_tid_address(0xffff93868050)         = 2302018
+set_robust_list(0xffff93868060, 24)     = 0
+rseq(0xffff93868720, 0x20, 0, 0xd428bc00) = 0
+mprotect(0xffff93808000, 16384, PROT_READ) = 0
+mprotect(0xaaaab5279000, 4096, PROT_READ) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffff93865000
+mprotect(0xffff9386b000, 8192, PROT_READ) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+munmap(0xffff9381c000, 85799)           = 0
+getrandom("\x27\x61\xdd\xa7\x50\x6e\x8f\xa3", 8, GRND_NONBLOCK) = 8
+brk(NULL)                               = 0xaaaae68a4000
+brk(0xaaaae68c5000)                     = 0xaaaae68c5000
+openat(AT_FDCWD, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=4121216, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 4121216, PROT_READ, MAP_PRIVATE, 3, 0) = 0xffff93281000
+close(3)                                = 0
+ioctl(0, TCGETS, {B38400 opost isig icanon echo ...}) = 0
+newfstatat(AT_FDCWD, "myfile.txt", {st_mode=S_IFREG|0664, st_size=0, ...}, AT_SYMLINK_NOFOLLOW) = 0
+geteuid()                               = 1000
+newfstatat(AT_FDCWD, "myfile.txt", {st_mode=S_IFREG|0664, st_size=0, ...}, AT_SYMLINK_NOFOLLOW) = 0
+syscall_0x1b7(0xffffffffffffff9c, 0xaaaae68a54d0, 0x2, 0x200, 0xffff9386cb58, 0xffffffffffffff9c) = -1 ENOSYS (Function not implemented)
+faccessat(AT_FDCWD, "myfile.txt", W_OK) = 0
+unlinkat(AT_FDCWD, "myfile.txt", 0)     = 0
+lseek(0, 0, SEEK_CUR)                   = -1 ESPIPE (Illegal seek)
+close(0)                                = 0
+close(1)                                = 0
+close(2)                                = 0
+exit_group(0)                           = ?
++++ exited with 0 +++
