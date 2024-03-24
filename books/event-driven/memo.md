@@ -66,6 +66,23 @@ Event-Driven Architecture in Golang
   - examples:
     - https://github.com/PacktPublishing/Event-Driven-Architecture-in-Golang/blob/main/Chapter03/docs/ADL/0002-use-a-modular-monolith-architecture.md
 
+## app
+
+- screaming architecture
+  - https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html
+  - Architectures are not (or should not) be about frameworks.
+  - Architectures should not be supplied by frameworks
+- Accept interfaces, return structs
+- Using interfaces will result in easier to test code, so teams should use the approach that fits the situation.
+- composition root
+  - where di takes place
+- DI tools
+  - Google wire
+    - https://github.com/google/wire
+  - dig
+    - https://github.com/uber-go/dig
+
+
 ## English
 
 - Errata
@@ -96,3 +113,7 @@ sentences
 ## Links
 
 - https://github.com/PacktPublishing/Event-Driven-Architecture-in-Golang
+- [godog](https://github.com/cucumber/godog)
+  - 振る舞いのテスト！
+  - e2e になるのかも
+- Awesome EventStorming
