@@ -76,10 +76,14 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	return &Game{
-		cat:   NewCat(),
-		snake: NewSnake(),
-	}
+	g := &Game{}
+	g.initGame()
+	return g
+}
+
+func (g *Game) initGame() {
+	g.cat = NewCat()
+	g.snake = NewSnake()
 }
 
 type Cat struct {
@@ -169,10 +173,15 @@ type Velocity struct {
 }
 
 func (g *Game) Update() error {
-	if !g.dead() {
-		g.cat.update()
-		g.snake.update()
+	if g.dead() {
+		if ebiten.IsKeyPressed(ebiten.KeySpace) {
+			g.initGame()
+		}
+		return nil
 	}
+
+	g.cat.update()
+	g.snake.update()
 
 	return nil
 }
