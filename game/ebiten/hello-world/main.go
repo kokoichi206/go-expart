@@ -2,13 +2,18 @@ package main
 
 import (
 	"bytes"
+	"context"
 	_ "embed"
 	"fmt"
 	"image"
 	"image/color"
 	_ "image/png"
 	"log"
+	"log/slog"
 	"math"
+	"math/rand"
+	"os"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -71,19 +76,66 @@ func init() {
 }
 
 type Game struct {
-	cat   *Cat
-	snake *Snake
+	ctx    context.Context
+	closer func()
+	logger *slog.Logger
+
+	cat    *Cat
+	snakes []*Snake
+
+	enemyCh chan *enemy
+
+	score     int
+	highScore int
 }
 
 func NewGame() *Game {
-	g := &Game{}
+	h := slog.NewJSONHandler(
+		os.Stderr,
+		&slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		},
+	)
+	slog.SetDefault(slog.New(h))
+	logger := slog.Default()
+
+	g := &Game{
+		logger: logger,
+		// enemyCh: make(chan *enemy, 3),
+		enemyCh: make(chan *enemy),
+	}
 	g.initGame()
 	return g
 }
 
 func (g *Game) initGame() {
+	if g.closer != nil {
+		g.closer()
+	}
+
 	g.cat = NewCat()
-	g.snake = NewSnake()
+	g.snakes = []*Snake{}
+	g.ctx, g.closer = context.WithCancel(context.Background())
+
+	go g.enemyGenerator()
+}
+
+func (g *Game) enemyGenerator() {
+	for {
+		select {
+		case <-g.ctx.Done():
+			return
+		default:
+		}
+
+		g.enemyCh <- &enemy{
+			enType: snake,
+		}
+
+		// 2秒から4秒のランダムな遅延を生成。
+		delay := time.Second * time.Duration(2+rand.Intn(3))
+		time.Sleep(delay)
+	}
 }
 
 type Cat struct {
@@ -133,6 +185,16 @@ func (c *Cat) draw(screen *ebiten.Image) {
 	screen.DrawImage(catImage, op)
 }
 
+type enemy struct {
+	enType enType
+}
+
+type enType int
+
+const (
+	snake enType = iota
+)
+
 type Snake struct {
 	// 中心のポジション。
 	pos Position
@@ -181,7 +243,11 @@ func (g *Game) Update() error {
 	}
 
 	g.cat.update()
-	g.snake.update()
+	for _, s := range g.snakes {
+		s.update()
+	}
+
+	g.updateStage()
 
 	return nil
 }
@@ -192,7 +258,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("x, y, vx, vy: %.2f, %.2f, %.2f, %.2f", g.cat.pos.X, g.cat.pos.Y, g.cat.vec.X, g.cat.vec.Y))
 
 	g.cat.draw(screen)
-	g.snake.draw(screen)
+	for _, s := range g.snakes {
+		s.draw(screen)
+	}
 
 	if g.dead() {
 		op := &ebiten.DrawImageOptions{}
@@ -202,8 +270,33 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) dead() bool {
-	// 球体とみなして当たり判定を行う。
-	return math.Pow(g.cat.pos.X-g.snake.pos.X, 2)+math.Pow(g.cat.pos.Y-g.snake.pos.Y, 2) < math.Pow(catSize/2+enemySize/2, 2)
+	for _, s := range g.snakes {
+		// 球体とみなして当たり判定を行う。
+		if math.Pow(g.cat.pos.X-s.pos.X, 2)+math.Pow(g.cat.pos.Y-s.pos.Y, 2) < math.Pow(catSize/2+enemySize/2, 2) {
+			return true
+		}
+	}
+	return false
+}
+
+func (g *Game) updateStage() {
+	select {
+	case e := <-g.enemyCh:
+		switch e.enType {
+		case snake:
+			g.logger.Debug("new snake created")
+			g.snakes = append(g.snakes, NewSnake())
+		default:
+		}
+	default:
+	}
+
+	for _, s := range g.snakes {
+		if s.pos.X < -enemyImgSize {
+			g.score++
+			g.snakes = g.snakes[1:]
+		}
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
