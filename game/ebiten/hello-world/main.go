@@ -13,6 +13,7 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -72,11 +73,10 @@ func init() {
 	bg = ebiten.NewImage(screenWidth, screenHeight)
 	vector.DrawFilledRect(
 		bg, 0, 0, screenWidth, screenHeight,
-		color.RGBA{0, 0xff, 0, 0xff}, true)
+		color.RGBA{0xaa, 0xaa, 0xaa, 0xff}, true)
 }
 
 type Game struct {
-	ctx    context.Context
 	closer func()
 	logger *slog.Logger
 
@@ -99,6 +99,8 @@ func NewGame() *Game {
 	slog.SetDefault(slog.New(h))
 	logger := slog.Default()
 
+	go goroutineCheck(logger)
+
 	g := &Game{
 		logger: logger,
 		// enemyCh: make(chan *enemy, 3),
@@ -108,6 +110,20 @@ func NewGame() *Game {
 	return g
 }
 
+func goroutineCheck(logger *slog.Logger) {
+	ticker := time.NewTicker(4 * time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		logger.Debug("goroutine check",
+			slog.Attr{
+				Key:   "count",
+				Value: slog.IntValue(runtime.NumGoroutine()),
+			},
+		)
+	}
+}
+
 func (g *Game) initGame() {
 	if g.closer != nil {
 		g.closer()
@@ -115,26 +131,26 @@ func (g *Game) initGame() {
 
 	g.cat = NewCat()
 	g.snakes = []*Snake{}
-	g.ctx, g.closer = context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
+	g.closer = func() {
+		cancel()
+	}
 
-	go g.enemyGenerator()
+	go g.enemyGenerator(ctx)
 }
 
-func (g *Game) enemyGenerator() {
+func (g *Game) enemyGenerator(ctx context.Context) {
 	for {
 		select {
-		case <-g.ctx.Done():
+		case <-ctx.Done():
 			return
-		default:
+		case <-time.After(time.Second * time.Duration(2+rand.Intn(3))):
+			// 2秒から4秒のランダムな遅延を生成。
 		}
 
 		g.enemyCh <- &enemy{
 			enType: snake,
 		}
-
-		// 2秒から4秒のランダムな遅延を生成。
-		delay := time.Second * time.Duration(2+rand.Intn(3))
-		time.Sleep(delay)
 	}
 }
 
