@@ -18,7 +18,11 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 )
 
 const (
@@ -49,6 +53,8 @@ var (
 
 	bg           *ebiten.Image
 	gameoverLogo *ebiten.Image
+
+	mpFont font.Face
 )
 
 func init() {
@@ -74,6 +80,20 @@ func init() {
 	vector.DrawFilledRect(
 		bg, 0, 0, screenWidth, screenHeight,
 		color.RGBA{0xaa, 0xaa, 0xaa, 0xff}, true)
+
+	tt, err := opentype.Parse(fonts.MPlus1pRegular_ttf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	const dpi = 72
+	mpFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    24,
+		DPI:     dpi,
+		Hinting: font.HintingVertical,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 type Game struct {
@@ -89,11 +109,17 @@ type Game struct {
 	highScore int
 }
 
-func NewGame() *Game {
+func NewGame(logLevel string) *Game {
+	lv := slog.LevelInfo
+	switch logLevel {
+	case "debug", "DEBUG":
+		lv = slog.LevelDebug
+	default:
+	}
 	h := slog.NewJSONHandler(
 		os.Stderr,
 		&slog.HandlerOptions{
-			Level: slog.LevelDebug,
+			Level: lv,
 		},
 	)
 	slog.SetDefault(slog.New(h))
@@ -135,6 +161,8 @@ func (g *Game) initGame() {
 	g.closer = func() {
 		cancel()
 	}
+	g.score = 0
+	g.highScore = max(g.highScore, g.score)
 
 	go g.enemyGenerator(ctx)
 }
@@ -185,13 +213,21 @@ func (c *Cat) update() {
 		c.vec.Y += 4
 	}
 
-	// 地面より下に行かないようにする。
+	// y 軸のバリデーション。
 	if c.pos.Y+c.vec.Y <= catImgSize/2 {
 		c.vec.Y = 0
 		c.pos.Y = catImgSize / 2
 	} else {
 		c.pos.Y += c.vec.Y
 		c.vec.Y -= 0.1
+	}
+
+	// x 軸のバリデーション。
+	if c.pos.X < catImgSize/2 {
+		c.pos.X = catImgSize / 2
+	}
+	if c.pos.X > screenWidth-catImgSize/2 {
+		c.pos.X = screenWidth - catImgSize/2
 	}
 }
 
@@ -273,16 +309,30 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("x, y, vx, vy: %.2f, %.2f, %.2f, %.2f", g.cat.pos.X, g.cat.pos.Y, g.cat.vec.X, g.cat.vec.Y))
 
+	g.showScore(screen)
+
 	g.cat.draw(screen)
 	for _, s := range g.snakes {
 		s.draw(screen)
 	}
 
 	if g.dead() {
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(screenWidth/2-float64(gameoverLogo.Bounds().Dx())/2, screenHeight/2-float64(gameoverLogo.Bounds().Dy())/2)
-		screen.DrawImage(gameoverLogo, op)
+		showGameOver(screen)
 	}
+}
+
+func (g *Game) showScore(screen *ebiten.Image) {
+	text.Draw(screen, fmt.Sprintf("%2d", g.score), mpFont, screenWidth-50, 30, color.White)
+}
+
+func showGameOver(screen *ebiten.Image) {
+	const restartStr = "Press 'Space' to restart"
+	b, _ := font.BoundString(mpFont, restartStr)
+	text.Draw(screen, restartStr, mpFont, screenWidth/2-b.Max.X.Round()/2, 80, color.RGBA{0xff, 0x00, 0x00, 0xFF})
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(screenWidth/2-float64(gameoverLogo.Bounds().Dx())/2, screenHeight/2-float64(gameoverLogo.Bounds().Dy())/2)
+	screen.DrawImage(gameoverLogo, op)
 }
 
 func (g *Game) dead() bool {
@@ -310,6 +360,7 @@ func (g *Game) updateStage() {
 	for _, s := range g.snakes {
 		if s.pos.X < -enemyImgSize {
 			g.score++
+			g.logger.Debug(fmt.Sprintf("score up! (new score: %d)", g.score))
 			g.snakes = g.snakes[1:]
 		}
 	}
@@ -320,9 +371,11 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
+	lv := os.Getenv("LOG_LEVEL")
+
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Cat game")
-	if err := ebiten.RunGame(NewGame()); err != nil {
+	if err := ebiten.RunGame(NewGame(lv)); err != nil {
 		log.Fatal(err)
 	}
 }

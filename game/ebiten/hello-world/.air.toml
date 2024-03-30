@@ -4,7 +4,8 @@ tmp_dir = "tmp"
 
 [build]
 cmd = "go build -race -o ./tmp/main ./*.go"
-bin = "tmp/main"
+# Use environment variables.
+bin = ";LOG_LEVEL=debug ./tmp/main"
 
 # Watch these filename extensions.
 include_ext = ["go", "tpl", "tmpl", "html"]
