@@ -1,0 +1,31 @@
+html {
+  background-color: #f0f0f0;
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+}
+body {
+  margin: 0;
+  padding: auto;
+  width: 100%;
+  height: 100%;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* ビューポートの高さに合わせます */
+}
+
+#game {
+  text-align: center; /* iframe内のテキストなどを中央揃えにします */
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
