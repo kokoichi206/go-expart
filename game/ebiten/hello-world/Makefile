@@ -6,13 +6,17 @@ run:
 dev:	## Hot reload 付きでサーバーを起動する。
 	air -c .air.toml
 
-.PHONY: web
+.PHONY: wasm-build
 wasm-build:	## WebAssembly をビルドする。
 	GOOS=js GOARCH=wasm go build -o ./web/main.wasm ./main.go
 
 .PHONY: web-deploy
 web-deploy:
 	cp web/* ../../../docs
+
+.PHONY: mobile-build
+mobile-build:	## Android 用の aar ファイルをビルドする。
+	ebitenmobile bind -target android -androidapi 33 -javapkg jp.mydns.kokoichi206.game.cat -o ./mobile/android/cat/cat.aar ./mobile
 
 .PHONY: prepare-wasm
 prepare-wasm:	## WebAssembly 用のファイルをコピーする。
