@@ -7,10 +7,16 @@ import (
 	"hello-world/cat/touch"
 )
 
+const (
+	maxJumpStep = 3
+)
+
 type Cat struct {
 	// 中心のポジション。
 	pos Position
 	vec Velocity
+
+	jumpStep int
 
 	tm *touch.TouchManager
 }
@@ -37,17 +43,25 @@ func (c *Cat) update() {
 		c.pos.X += catSpeed
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		c.vec.Y += 5
+		if c.jumpStep < maxJumpStep {
+			c.vec.Y += 5
+			c.jumpStep += 1	
+		}
 	}
 
 	if touch.IsTouchMain() && c.tm.IsJustTouched() {
-		c.vec.Y += 5
+		if c.jumpStep < maxJumpStep {
+			c.vec.Y += 5
+			c.jumpStep += 1	
+		}
 	}
 
 	// y 軸のバリデーション。
 	if c.pos.Y+c.vec.Y <= catImgSize/2 {
 		c.vec.Y = 0
 		c.pos.Y = catImgSize / 2
+		// 着地時に step カウントをリセット。
+		c.jumpStep = 0
 	} else {
 		c.pos.Y += c.vec.Y
 		c.vec.Y -= 0.1

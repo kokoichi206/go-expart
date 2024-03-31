@@ -6,6 +6,13 @@ run:
 dev:	## Hot reload 付きでサーバーを起動する。
 	air -c .air.toml
 
+.PHONY: build-all
+build-all:	## 全てのビルドを行う。
+	make wasm-build
+	make web-deploy
+	make android-build
+	make ios-build
+
 .PHONY: wasm-build
 wasm-build:	## WebAssembly をビルドする。
 	GOOS=js GOARCH=wasm go build -o ./web/main.wasm ./main.go
