@@ -2,26 +2,17 @@ package cat
 
 import (
 	"bytes"
-	"context"
 	_ "embed"
-	"fmt"
-	"hello-world/cat/touch"
 	"image"
 	"image/color"
 	_ "image/png"
 	"log"
 	"log/slog"
-	"math"
-	"math/rand"
-	"os"
 	"runtime"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
@@ -41,13 +32,13 @@ const (
 )
 
 var (
-	//go:embed cat.png
+	//go:embed assets/cat.png
 	Cat_png []byte
 
-	//go:embed snake.png
+	//go:embed assets/snake.png
 	Snake_png []byte
 
-	//go:embed gameover.png
+	//go:embed assets/gameover.png
 	Gameover_png []byte
 
 	catImage        *ebiten.Image
@@ -98,47 +89,6 @@ func init() {
 	}
 }
 
-type Game struct {
-	closer func()
-	logger *slog.Logger
-
-	cat    *Cat
-	snakes []*Snake
-	tm     *touch.TouchManager
-
-	enemyCh chan *enemy
-
-	score     int
-	highScore int
-}
-
-func NewGame(logLevel string) *Game {
-	lv := slog.LevelInfo
-	switch logLevel {
-	case "debug", "DEBUG":
-		lv = slog.LevelDebug
-	default:
-	}
-	h := slog.NewJSONHandler(
-		os.Stderr,
-		&slog.HandlerOptions{
-			Level: lv,
-		},
-	)
-	slog.SetDefault(slog.New(h))
-	logger := slog.Default()
-
-	go goroutineCheck(logger)
-
-	g := &Game{
-		logger:  logger,
-		enemyCh: make(chan *enemy),
-		tm:      touch.NewTouchManager(),
-	}
-	g.initGame()
-	return g
-}
-
 func goroutineCheck(logger *slog.Logger) {
 	ticker := time.NewTicker(4 * time.Second)
 	defer ticker.Stop()
@@ -153,138 +103,6 @@ func goroutineCheck(logger *slog.Logger) {
 	}
 }
 
-func (g *Game) initGame() {
-	if g.closer != nil {
-		g.closer()
-	}
-
-	g.cat = NewCat(g.tm)
-	g.snakes = []*Snake{}
-	ctx, cancel := context.WithCancel(context.Background())
-	g.closer = func() {
-		cancel()
-	}
-	g.score = 0
-	g.highScore = max(g.highScore, g.score)
-
-	go g.enemyGenerator(ctx)
-}
-
-func (g *Game) enemyGenerator(ctx context.Context) {
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-time.After(time.Second * time.Duration(2+rand.Intn(3))):
-			// 2秒から4秒のランダムな遅延を生成。
-		}
-
-		g.enemyCh <- &enemy{
-			enType: snake,
-		}
-	}
-}
-
-type Cat struct {
-	// 中心のポジション。
-	pos Position
-	vec Velocity
-
-	tm *touch.TouchManager
-}
-
-func NewCat(tm *touch.TouchManager) *Cat {
-	return &Cat{
-		pos: Position{
-			X: ScreenWidth / 3,
-			Y: catImgSize / 2,
-		},
-		vec: Velocity{
-			X: 0,
-			Y: 0,
-		},
-		tm: tm,
-	}
-}
-
-func (c *Cat) update() {
-	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		c.pos.X -= catSpeed
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		c.pos.X += catSpeed
-	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		c.vec.Y += 5
-	}
-
-	if touch.IsTouchMain() && c.tm.IsJustTouched() {
-		c.vec.Y += 5
-	}
-
-	// y 軸のバリデーション。
-	if c.pos.Y+c.vec.Y <= catImgSize/2 {
-		c.vec.Y = 0
-		c.pos.Y = catImgSize / 2
-	} else {
-		c.pos.Y += c.vec.Y
-		c.vec.Y -= 0.1
-	}
-
-	// x 軸のバリデーション。
-	if c.pos.X < catImgSize/2 {
-		c.pos.X = catImgSize / 2
-	}
-	if c.pos.X > ScreenWidth-catImgSize/2 {
-		c.pos.X = ScreenWidth - catImgSize/2
-	}
-}
-
-func (c *Cat) draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(c.pos.X-catImgSize/2), float64(ScreenHeight-(c.pos.Y+catImgSize/2)))
-	screen.DrawImage(catImage, op)
-}
-
-type enemy struct {
-	enType enType
-}
-
-type enType int
-
-const (
-	snake enType = iota
-)
-
-type Snake struct {
-	// 中心のポジション。
-	pos Position
-	vec Velocity
-}
-
-func (s *Snake) update() {
-	s.pos.X -= snakeSpeed
-}
-
-func (s *Snake) draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(s.pos.X-enemyImgSize/2), float64(ScreenHeight-(s.pos.Y+enemyImgSize/2)))
-	screen.DrawImage(enemySnakeImage, op)
-}
-
-func NewSnake() *Snake {
-	return &Snake{
-		pos: Position{
-			X: ScreenWidth,
-			Y: enemyImgSize / 2,
-		},
-		vec: Velocity{
-			X: 0,
-			Y: 0,
-		},
-	}
-}
-
 type Position struct {
 	X float64
 	Y float64
@@ -293,96 +111,4 @@ type Position struct {
 type Velocity struct {
 	X float64
 	Y float64
-}
-
-func (g *Game) Update() error {
-	g.tm.Update()
-	if g.dead() {
-		if ebiten.IsKeyPressed(ebiten.KeySpace) ||
-			(touch.IsTouchMain() && g.tm.IsJustTouched()) {
-			g.initGame()
-		}
-		return nil
-	}
-
-	g.cat.update()
-	for _, s := range g.snakes {
-		s.update()
-	}
-
-	g.updateStage()
-
-	return nil
-}
-
-func (g *Game) Draw(screen *ebiten.Image) {
-	screen.DrawImage(bg, nil)
-
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("x, y, vx, vy: %.2f, %.2f, %.2f, %.2f", g.cat.pos.X, g.cat.pos.Y, g.cat.vec.X, g.cat.vec.Y))
-
-	g.showScore(screen)
-
-	g.cat.draw(screen)
-	for _, s := range g.snakes {
-		s.draw(screen)
-	}
-
-	if g.dead() {
-		showGameOver(screen)
-	}
-}
-
-func (g *Game) showScore(screen *ebiten.Image) {
-	text.Draw(screen, fmt.Sprintf("%2d", g.score), mpFont, ScreenWidth-50, 30, color.White)
-}
-
-func showGameOver(screen *ebiten.Image) {
-	var restartStr string
-	if touch.IsTouchMain() {
-		restartStr = "Touch to restart"
-	} else {
-		restartStr = "Press 'Space' to restart"
-	}
-
-	b, _ := font.BoundString(mpFont, restartStr)
-	text.Draw(screen, restartStr, mpFont, ScreenWidth/2-b.Max.X.Round()/2, 80, color.RGBA{0xff, 0x00, 0x00, 0xFF})
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(ScreenWidth/2-float64(gameoverLogo.Bounds().Dx())/2, ScreenHeight/2-float64(gameoverLogo.Bounds().Dy())/2)
-	screen.DrawImage(gameoverLogo, op)
-}
-
-func (g *Game) dead() bool {
-	for _, s := range g.snakes {
-		// 球体とみなして当たり判定を行う。
-		if math.Pow(g.cat.pos.X-s.pos.X, 2)+math.Pow(g.cat.pos.Y-s.pos.Y, 2) < math.Pow(catSize/2+enemySize/2, 2) {
-			return true
-		}
-	}
-	return false
-}
-
-func (g *Game) updateStage() {
-	select {
-	case e := <-g.enemyCh:
-		switch e.enType {
-		case snake:
-			g.logger.Debug("new snake created")
-			g.snakes = append(g.snakes, NewSnake())
-		default:
-		}
-	default:
-	}
-
-	for _, s := range g.snakes {
-		if s.pos.X < -enemyImgSize {
-			g.score++
-			g.logger.Debug(fmt.Sprintf("score up! (new score: %d)", g.score))
-			g.snakes = g.snakes[1:]
-		}
-	}
-}
-
-func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return ScreenWidth, ScreenHeight
 }
