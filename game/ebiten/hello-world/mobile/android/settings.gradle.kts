@@ -14,5 +14,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Cat Game"
-include(":app")
+include(":app", ":cat")
  

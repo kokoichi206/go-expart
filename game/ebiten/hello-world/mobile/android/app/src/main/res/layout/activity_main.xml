@@ -7,4 +7,10 @@
     android:keepScreenOn="true"
     tools:context=".MainActivity">
 
+    <jp.mydns.kokoichi206.game.cat.mobile.EbitenView
+        android:id="@+id/ebitenview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true" />
+
 </RelativeLayout>
