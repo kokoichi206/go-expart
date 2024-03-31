@@ -5,6 +5,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"hello-world/cat/touch"
 	"image"
 	"image/color"
 	_ "image/png"
@@ -103,6 +104,7 @@ type Game struct {
 
 	cat    *Cat
 	snakes []*Snake
+	tm     *touch.TouchManager
 
 	enemyCh chan *enemy
 
@@ -131,6 +133,7 @@ func NewGame(logLevel string) *Game {
 	g := &Game{
 		logger:  logger,
 		enemyCh: make(chan *enemy),
+		tm:      touch.NewTouchManager(),
 	}
 	g.initGame()
 	return g
@@ -155,7 +158,7 @@ func (g *Game) initGame() {
 		g.closer()
 	}
 
-	g.cat = NewCat()
+	g.cat = NewCat(g.tm)
 	g.snakes = []*Snake{}
 	ctx, cancel := context.WithCancel(context.Background())
 	g.closer = func() {
@@ -186,9 +189,11 @@ type Cat struct {
 	// 中心のポジション。
 	pos Position
 	vec Velocity
+
+	tm *touch.TouchManager
 }
 
-func NewCat() *Cat {
+func NewCat(tm *touch.TouchManager) *Cat {
 	return &Cat{
 		pos: Position{
 			X: ScreenWidth / 3,
@@ -198,6 +203,7 @@ func NewCat() *Cat {
 			X: 0,
 			Y: 0,
 		},
+		tm: tm,
 	}
 }
 
@@ -209,6 +215,10 @@ func (c *Cat) update() {
 		c.pos.X += catSpeed
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		c.vec.Y += 5
+	}
+
+	if touch.IsTouchMain() && c.tm.IsJustTouched() {
 		c.vec.Y += 5
 	}
 
@@ -286,8 +296,10 @@ type Velocity struct {
 }
 
 func (g *Game) Update() error {
+	g.tm.Update()
 	if g.dead() {
-		if ebiten.IsKeyPressed(ebiten.KeySpace) {
+		if ebiten.IsKeyPressed(ebiten.KeySpace) ||
+			(touch.IsTouchMain() && g.tm.IsJustTouched()) {
 			g.initGame()
 		}
 		return nil
@@ -325,7 +337,12 @@ func (g *Game) showScore(screen *ebiten.Image) {
 }
 
 func showGameOver(screen *ebiten.Image) {
-	const restartStr = "Press 'Space' to restart"
+	var restartStr string
+	if touch.IsTouchMain() {
+		restartStr = "Touch to restart"
+	} else {
+		restartStr = "Press 'Space' to restart"
+	}
 
 	b, _ := font.BoundString(mpFont, restartStr)
 	text.Draw(screen, restartStr, mpFont, ScreenWidth/2-b.Max.X.Round()/2, 80, color.RGBA{0xff, 0x00, 0x00, 0xFF})
