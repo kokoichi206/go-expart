@@ -7,6 +7,8 @@
 
 #import "AppDelegate.h"
 
+#import "MobileEbitenViewControllerWithErrorHandling.h"
+
 @interface AppDelegate ()
 
 @end
@@ -36,5 +38,17 @@
     // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
 }
 
+- (void)applicationWillResignActive:(UIApplication *)application {
+    [[self ebitenViewContrller] suspendGame];
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    [[self ebitenViewContrller] resumeGame];
+}
+
+- (MobileEbitenViewControllerWithErrorHandling*)ebitenViewContrller
+{
+    return (MobileEbitenViewControllerWithErrorHandling*)([[self window] rootViewController]);
+}
 
 @end

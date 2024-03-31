@@ -7,16 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E11CB7402BB9928600D3924F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1ABA3CF2BB952A40056241E /* Main.storyboard */; };
+		E11DD6542BB995F60029FD8C /* MobileEbitenViewControllerWithErrorHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = E11DD6532BB995F60029FD8C /* MobileEbitenViewControllerWithErrorHandling.m */; };
+		E11DD6572BB99C6C0029FD8C /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E11CB73A2BB98F4B00D3924F /* GameController.framework */; };
 		E1ABA3C82BB952A40056241E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E1ABA3C72BB952A40056241E /* AppDelegate.m */; };
 		E1ABA3CB2BB952A40056241E /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E1ABA3CA2BB952A40056241E /* SceneDelegate.m */; };
 		E1ABA3CE2BB952A40056241E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E1ABA3CD2BB952A40056241E /* ViewController.m */; };
-		E1ABA3D12BB952A40056241E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1ABA3CF2BB952A40056241E /* Main.storyboard */; };
 		E1ABA3D32BB952A60056241E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1ABA3D22BB952A60056241E /* Assets.xcassets */; };
 		E1ABA3D62BB952A60056241E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1ABA3D42BB952A60056241E /* LaunchScreen.storyboard */; };
 		E1ABA3D92BB952A60056241E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E1ABA3D82BB952A60056241E /* main.m */; };
+		E1ABA3E12BB9829D0056241E /* Mobile.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1ABA3E02BB9829D0056241E /* Mobile.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E11CB7382BB98F3C00D3924F /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		E11CB73A2BB98F4B00D3924F /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		E11CB73C2BB98F5300D3924F /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		E11CB73E2BB9914000D3924F /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		E11DD6532BB995F60029FD8C /* MobileEbitenViewControllerWithErrorHandling.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MobileEbitenViewControllerWithErrorHandling.m; sourceTree = "<group>"; };
+		E11DD6552BB9962C0029FD8C /* MobileEbitenViewControllerWithErrorHandling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MobileEbitenViewControllerWithErrorHandling.h; sourceTree = "<group>"; };
 		E1ABA3C32BB952A40056241E /* ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1ABA3C62BB952A40056241E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		E1ABA3C72BB952A40056241E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -29,6 +38,7 @@
 		E1ABA3D52BB952A60056241E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E1ABA3D72BB952A60056241E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E1ABA3D82BB952A60056241E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		E1ABA3E02BB9829D0056241E /* Mobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = Mobile.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +46,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E1ABA3E12BB9829D0056241E /* Mobile.xcframework in Frameworks */,
+				E11DD6572BB99C6C0029FD8C /* GameController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +59,7 @@
 			children = (
 				E1ABA3C52BB952A40056241E /* ios */,
 				E1ABA3C42BB952A40056241E /* Products */,
+				E1ABA3DF2BB9829C0056241E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -68,12 +81,26 @@
 				E1ABA3CC2BB952A40056241E /* ViewController.h */,
 				E1ABA3CD2BB952A40056241E /* ViewController.m */,
 				E1ABA3CF2BB952A40056241E /* Main.storyboard */,
+				E11DD6532BB995F60029FD8C /* MobileEbitenViewControllerWithErrorHandling.m */,
+				E11DD6552BB9962C0029FD8C /* MobileEbitenViewControllerWithErrorHandling.h */,
 				E1ABA3D22BB952A60056241E /* Assets.xcassets */,
 				E1ABA3D42BB952A60056241E /* LaunchScreen.storyboard */,
 				E1ABA3D72BB952A60056241E /* Info.plist */,
 				E1ABA3D82BB952A60056241E /* main.m */,
 			);
 			path = ios;
+			sourceTree = "<group>";
+		};
+		E1ABA3DF2BB9829C0056241E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E11CB73E2BB9914000D3924F /* OpenGLES.framework */,
+				E11CB73C2BB98F5300D3924F /* AVFoundation.framework */,
+				E11CB73A2BB98F4B00D3924F /* GameController.framework */,
+				E11CB7382BB98F3C00D3924F /* GLKit.framework */,
+				E1ABA3E02BB9829D0056241E /* Mobile.xcframework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -133,9 +160,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E11CB7402BB9928600D3924F /* Main.storyboard in Resources */,
 				E1ABA3D62BB952A60056241E /* LaunchScreen.storyboard in Resources */,
 				E1ABA3D32BB952A60056241E /* Assets.xcassets in Resources */,
-				E1ABA3D12BB952A40056241E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,6 +173,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E11DD6542BB995F60029FD8C /* MobileEbitenViewControllerWithErrorHandling.m in Sources */,
 				E1ABA3CE2BB952A40056241E /* ViewController.m in Sources */,
 				E1ABA3C82BB952A40056241E /* AppDelegate.m in Sources */,
 				E1ABA3D92BB952A60056241E /* main.m in Sources */,
