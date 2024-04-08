@@ -1,9 +1,18 @@
-https://go-review.googlesource.com/c/go/+/576076/2/src/net/http/h2_bundle.go
+## issue
 
+https://github.com/golang/go/issues/65051
 
 https://github.com/golang/go/issues/65387
 
 
+## go src 修正内容
+
+https://go-review.googlesource.com/c/go/+/576076/2/src/net/http/h2_bundle.go
+
+
+
+
+## curl で http2 メモ
 
 ``` sh
 #    -k, --insecure
@@ -81,7 +90,15 @@ $ man curl
 Hello, HTTP/2 world!
 ```
 
+## CONTINUATION
+
+[rfc7540-6.10](https://datatracker.ietf.org/doc/rfc7540/)
+
+> A CONTINUATION frame MUST be preceded by a HEADERS, PUSH_PROMISE or CONTINUATION frame without the END_HEADERS flag set. A recipient that observes violation of this rule MUST respond with a connection error (Section 5.4.1) of type PROTOCOL_ERROR.
+
+CONTINUATION の前には END_HEADERS のセットされてない Header とかが必要！
 
 ## Links
 
-https://datatracker.ietf.org/doc/html/rfc9204
+- https://datatracker.ietf.org/doc/html/rfc9204
+

