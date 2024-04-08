@@ -1,0 +1,30 @@
+❯ make
+GODEBUG=http2debug=2 go run *.go
+Listening on https://localhost:8080
+2024/04/08 20:46:40 http2: server connection from [::1]:60659 on 0x140000be000
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: wrote SETTINGS len=30, settings: MAX_FRAME_SIZE=1048576, MAX_CONCURRENT_STREAMS=250, MAX_HEADER_LIST_SIZE=1048896, HEADER_TABLE_SIZE=4096, INITIAL_WINDOW_SIZE=1048576
+2024/04/08 20:46:40 http2: server: client [::1]:60659 said hello
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: read SETTINGS len=0
+2024/04/08 20:46:40 http2: server read frame SETTINGS len=0
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: read HEADERS flags=END_HEADERS stream=1 len=10
+2024/04/08 20:46:40 http2: decoded hpack field header field ":status" = "200"
+2024/04/08 20:46:40 http2: decoded hpack field header field "content-type" = "image/png"
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: wrote SETTINGS flags=ACK len=0
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: wrote WINDOW_UPDATE len=4 (conn) incr=983041
+2024/04/08 20:46:40 http2: server read frame HEADERS flags=END_HEADERS stream=1 len=10
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: read HEADERS flags=END_HEADERS stream=1 len=29
+2024/04/08 20:46:40 http2: decoded hpack field header field "pien" = "paonpaon"
+2024/04/08 20:46:40 http2: decoded hpack field header field "pien-paon" = "piiiiiiiiii"
+2024/04/08 20:46:40 http2: server read frame HEADERS flags=END_HEADERS stream=1 len=29
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: read HEADERS flags=END_HEADERS stream=1 len=29
+2024/04/08 20:46:40 http2: decoded hpack field header field "pien" = "paonpaon"
+2024/04/08 20:46:40 http2: decoded hpack field header field "pien-paon" = "piiiiiiiiii"
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: wrote RST_STREAM stream=1 len=4 ErrCode=PROTOCOL_ERROR
+2024/04/08 20:46:40 http2: server read frame HEADERS flags=END_HEADERS stream=1 len=29
+2024/04/08 20:46:40 http2: server connection error from [::1]:60659: connection error: PROTOCOL_ERROR
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: read HEADERS flags=END_HEADERS stream=1 len=29
+2024/04/08 20:46:40 http2: decoded hpack field header field "pien" = "paonpaon"
+2024/04/08 20:46:40 http2: decoded hpack field header field "pien-paon" = "piiiiiiiiii"
+2024/04/08 20:46:40 http2: server read frame HEADERS flags=END_HEADERS stream=1 len=29
+2024/04/08 20:46:40 http2: Framer 0x140000da0e0: wrote GOAWAY len=8 LastStreamID=1 ErrCode=PROTOCOL_ERROR Debug=""
+2024/04/08 20:46:40 http2: server closing client connection; error reading frame from client [::1]:60659: read tcp [::1]:8080->[::1]:60659: read: connection reset by peer

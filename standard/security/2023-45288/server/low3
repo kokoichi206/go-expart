@@ -1,0 +1,24 @@
+❯ make
+GODEBUG=http2debug=2 go run *.go
+Listening on https://localhost:8080
+2024/04/08 22:08:38 http2: server connection from [::1]:50217 on 0x140000ea000
+2024/04/08 22:08:38 http2: Framer 0x1400010a0e0: wrote SETTINGS len=30, settings: MAX_FRAME_SIZE=1048576, MAX_CONCURRENT_STREAMS=250, MAX_HEADER_LIST_SIZE=1048896, HEADER_TABLE_SIZE=4096, INITIAL_WINDOW_SIZE=1048576
+2024/04/08 22:08:38 http2: server: client [::1]:50217 said hello
+2024/04/08 22:08:38 http2: Framer 0x1400010a0e0: read SETTINGS len=18, settings: ENABLE_PUSH=0, INITIAL_WINDOW_SIZE=4194304, HEADER_TABLE_SIZE=4096
+2024/04/08 22:08:38 http2: server read frame SETTINGS len=18, settings: ENABLE_PUSH=0, INITIAL_WINDOW_SIZE=4194304, HEADER_TABLE_SIZE=4096
+2024/04/08 22:08:38 http2: server processing setting [ENABLE_PUSH = 0]
+2024/04/08 22:08:38 http2: server processing setting [INITIAL_WINDOW_SIZE = 4194304]
+2024/04/08 22:08:38 http2: server processing setting [HEADER_TABLE_SIZE = 4096]
+2024/04/08 22:08:38 http2: Framer 0x1400010a0e0: wrote SETTINGS flags=ACK len=0
+2024/04/08 22:08:38 http2: Framer 0x1400010a0e0: wrote WINDOW_UPDATE len=4 (conn) incr=983041
+2024/04/08 22:08:38 http2: Framer 0x1400010a0e0: read HEADERS flags=END_STREAM|END_HEADERS stream=1 len=53
+2024/04/08 22:08:38 http2: decoded hpack field header field ":authority" = "localhost:8080"
+2024/04/08 22:08:38 http2: decoded hpack field header field ":method" = "GET"
+2024/04/08 22:08:38 http2: decoded hpack field header field ":path" = "/"
+2024/04/08 22:08:38 http2: decoded hpack field header field ":scheme" = "https"
+2024/04/08 22:08:38 http2: decoded hpack field header field "custom-header" = "MyValue"
+2024/04/08 22:08:38 http2: decoded hpack field header field "accept-encoding" = "gzip"
+2024/04/08 22:08:38 http2: decoded hpack field header field "user-agent" = "Go-http-client/2.0"
+2024/04/08 22:08:38 http2: server read frame HEADERS flags=END_STREAM|END_HEADERS stream=1 len=53
+2024/04/08 22:08:38 http2: Framer 0x1400010a0e0: read SETTINGS flags=ACK len=0
+2024/04/08 22:08:38 http2: server read frame SETTINGS flags=ACK len=0
