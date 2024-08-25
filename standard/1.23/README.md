@@ -24,6 +24,10 @@ https://tip.golang.org/doc/godebug
 go list -f '{{.DefaultGODEBUG}}'
 ```
 
+## Iterator
+
+- https://pkg.go.dev/github.com/BooleanCat/go-functional/v2@v2.0.0-beta.6/it
+
 ## Links
 
 - [Go 1.23 Release Notes](https://tip.golang.org/doc/go1.23)
