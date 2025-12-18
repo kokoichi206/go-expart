@@ -1,0 +1,23 @@
+name: overflow_test
+
+on:
+  push:
+    paths:
+    - 'standard/overflow/**'
+
+jobs:
+  test:
+    defaults:
+      run:
+        shell: bash
+        working-directory: './standard/overflow'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+
+      - name: Run overflow test
+        run: go run main.go
